@@ -12,18 +12,18 @@ const formatDate = (dateString) => {
 
 const RepoCard = ({ repo }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.9 }}
+    initial={{ opacity: 0, scale: 0.95 }}
     animate={{ opacity: 1, scale: 1 }}
-    className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+    whileHover={{ y: -3, scale: 1.02 }}
+    className="backdrop-blur-md bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 hover:bg-gray-800/50 hover:border-purple-500/50 transition-all duration-300"
   >
     <div className="flex items-start justify-between mb-3">
       <div className="flex-1">
         <h4 className="font-semibold text-white mb-1 flex items-center gap-2">
           {repo.name}
-          <ExternalLink 
-            className="w-4 h-4 text-gray-400 hover:text-white cursor-pointer" 
-            onClick={() => window.open(repo.html_url, '_blank')}
-          />
+          <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
+            <ExternalLink className="w-4 h-4 text-gray-400 hover:text-purple-400 transition-colors" />
+          </a>
         </h4>
         {repo.description && (
           <p className="text-sm text-gray-300 line-clamp-2 mb-2">{repo.description}</p>
@@ -48,7 +48,7 @@ const RepoCard = ({ repo }) => (
         </div>
       </div>
       <span className="text-gray-500">
-        {formatDate(repo.updated_at)}
+        Updated {formatDate(repo.updated_at)}
       </span>
     </div>
   </motion.div>

@@ -1,15 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ChevronLeft, Download, Share2, ExternalLink, Github, Globe, Twitter, MapPin, Building, Calendar, Users, User, BookOpen, Star, GitFork, Code 
-} from 'lucide-react';
+import { ChevronLeft, Download, Share2, ExternalLink, Github, Globe, Twitter, MapPin, Building, Calendar, Users, User, BookOpen, Star, Code } from 'lucide-react';
 import { toast } from 'sonner';
 import { useParams, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import StatCard from '../components/StatCard';
 import RepoCard from '../components/RepoCard';
-
-const API_BASE = 'http://localhost:5000/api';
+import { ApiContext } from '../context/ApiContext';
 
 const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString('en-US', {
@@ -31,26 +28,19 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const profileRef = useRef();
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { getProfile, loading } = useContext(ApiContext);
 
   useEffect(() => {
     fetchProfile();
   }, [username]);
 
   const fetchProfile = async () => {
-    setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/profiles/${username}`);
-      if (!response.ok) {
-        throw new Error('Profile not found');
-      }
-      const data = await response.json();
+      const data = await getProfile(username);
       setProfile(data);
     } catch (error) {
       toast.error(error.message || 'Failed to fetch profile');
       navigate('/');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -69,7 +59,6 @@ const ProfilePage = () => {
       </body>
       </html>
     `;
-    
     const blob = new Blob([htmlContent], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -79,7 +68,6 @@ const ProfilePage = () => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    
     toast.success('Profile downloaded successfully!');
   };
 
@@ -89,7 +77,6 @@ const ProfilePage = () => {
       text: profile.githubData.bio || `Check out ${profile.githubData.name || profile.githubData.login}'s developer profile`,
       url: window.location.href
     };
-
     if (navigator.share) {
       try {
         await navigator.share(shareData);
@@ -116,12 +103,12 @@ const ProfilePage = () => {
       initial={{ opacity: 0, x: 100 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -100 }}
-      className="min-h-screen p-4"
+      className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-4 sm:p-6"
     >
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6 max-w-7xl mx-auto">
         <button 
           onClick={() => navigate('/')}
-          className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 hover:bg-gray-700/50 rounded-lg text-white transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
           Back
@@ -129,14 +116,14 @@ const ProfilePage = () => {
         <div className="flex gap-2">
           <button 
             onClick={shareProfile}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600/30 hover:bg-blue-600/40 rounded-lg text-white transition-colors"
           >
             <Share2 className="w-4 h-4" />
             Share
           </button>
           <button 
             onClick={downloadHTML}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600/20 hover:bg-green-600/30 rounded-lg transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-green-600/30 hover:bg-green-600/40 rounded-lg text-white transition-colors"
           >
             <Download className="w-4 h-4" />
             Download
@@ -144,11 +131,11 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <div ref={profileRef} className="max-w-6xl mx-auto">
+      <div ref={profileRef} className="max-w-7xl mx-auto">
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="backdrop-blur-xl bg-gradient-to-br from-white/10 via-white/5 to-transparent border border-white/10 rounded-2xl p-8 mb-8 shadow-2xl"
+          className="backdrop-blur-xl bg-gray-800/20 border border-gray-700/50 rounded-2xl p-8 mb-8 shadow-2xl"
         >
           <div className="flex flex-col lg:flex-row gap-8 items-start">
             <div className="flex-shrink-0">
@@ -157,22 +144,20 @@ const ProfilePage = () => {
                   src={githubData.avatar_url} 
                   alt={githubData.name || githubData.login}
                   className="w-48 h-48 rounded-full object-cover ring-4 ring-purple-400/50 shadow-2xl"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-purple-500/20 to-blue-500/20"></div>
               </div>
             </div>
-
             <div className="flex-1">
-              <h1 className="text-5xl font-bold text-white mb-2 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
+              <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent">
                 {githubData.name || githubData.login}
               </h1>
               <p className="text-purple-300 text-xl mb-4">@{githubData.login}</p>
-              
               {(customBio || githubData.bio) && (
                 <p className="text-gray-300 text-lg mb-6 leading-relaxed">{customBio || githubData.bio}</p>
               )}
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 text-sm">
                 {githubData.location && (
                   <div className="flex items-center gap-2 text-gray-300">
                     <MapPin className="w-4 h-4" />
@@ -198,13 +183,12 @@ const ProfilePage = () => {
                   </div>
                 )}
               </div>
-
               <div className="flex flex-wrap gap-3">
                 <a 
                   href={githubData.html_url} 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg border border-white/10 hover:border-white/20 transition-all flex items-center gap-2"
+                  className="px-4 py-2 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg border border-gray-600/50 hover:border-purple-500/50 transition-all flex items-center gap-2"
                 >
                   <Github className="w-4 h-4" />
                   GitHub
@@ -214,7 +198,7 @@ const ProfilePage = () => {
                     href={socialLinks.website.startsWith('http') ? socialLinks.website : `https://${socialLinks.website}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="px-4 py-2 bg-blue-700/50 hover:bg-blue-600/50 rounded-lg border border-white/10 hover:border-white/20 transition-all flex items-center gap-2"
+                    className="px-4 py-2 bg-blue-700/50 hover:bg-blue-600/50 rounded-lg border border-gray-600/50 hover:border-blue-500/50 transition-all flex items-center gap-2"
                   >
                     <Globe className="w-4 h-4" />
                     Website
@@ -222,10 +206,10 @@ const ProfilePage = () => {
                 )}
                 {socialLinks.twitter && (
                   <a 
-                    href={`https://twitter.com/${socialLinks.twitter}`} 
+                    href={socialLinks.twitter.startsWith('http') ? socialLinks.twitter : `https://twitter.com/${socialLinks.twitter}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="px-4 py-2 bg-sky-700/50 hover:bg-sky-600/50 rounded-lg border border-white/10 hover:border-white/20 transition-all flex items-center gap-2"
+                    className="px-4 py-2 bg-sky-700/50 hover:bg-sky-600/50 rounded-lg border border-gray-600/50 hover:border-cyan-500/50 transition-all flex items-center gap-2"
                   >
                     <Twitter className="w-4 h-4" />
                     Twitter
@@ -236,7 +220,7 @@ const ProfilePage = () => {
                     href={socialLinks.linkedin.startsWith('http') ? socialLinks.linkedin : `https://${socialLinks.linkedin}`} 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="px-4 py-2 bg-blue-800/50 hover:bg-blue-700/50 rounded-lg border border-white/10 hover:border-white/20 transition-all flex items-center gap-2"
+                    className="px-4 py-2 bg-blue-800/50 hover:bg-blue-700/50 rounded-lg border border-gray-600/50 hover:border-blue-800/50 transition-all flex items-center gap-2"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.327-.024-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.048c.476-.9 1.637-1.852 3.37-1.852 3.601 0 4.267 2.37 4.267 5.455v6.288zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0z"/>
@@ -256,11 +240,11 @@ const ProfilePage = () => {
           className="mb-8"
         >
           <h2 className="text-3xl font-bold text-white mb-6">📊 GitHub Stats</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <StatCard icon={BookOpen} label="Repositories" value={githubData.public_repos} />
             <StatCard icon={Users} label="Followers" value={githubData.followers} color="blue" />
             <StatCard icon={User} label="Following" value={githubData.following} color="green" />
-            <StatCard icon={Star} label="Total Stars" value={repositories.reduce((sum, repo) => sum + repo.stargazers_count, 0)} color="yellow" />
+            <StatCard icon={Star} label="Total Stars" value={profile.totalStars} color="yellow" />
           </div>
         </motion.section>
 
@@ -293,11 +277,11 @@ const ProfilePage = () => {
             className="mb-8"
           >
             <h2 className="text-3xl font-bold text-white mb-6">🚀 Projects</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {projects.map((project, index) => (
                 <div
                   key={index}
-                  className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4 hover:bg-white/10 transition-all duration-300"
+                  className="backdrop-blur-md bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 hover:bg-gray-800/50 hover:border-purple-500/50 transition-all duration-300"
                 >
                   <h4 className="font-semibold text-white mb-1">{project.name}</h4>
                   <p className="text-sm text-gray-300 mb-2">{project.description}</p>
@@ -336,30 +320,32 @@ const ProfilePage = () => {
         >
           <h2 className="text-3xl font-bold text-white mb-6">📈 Activity & Stats</h2>
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-            <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4">
+            <div className="backdrop-blur-md bg-gray-800/30 border border-gray-700/50 rounded-xl p-4">
               <h3 className="text-lg font-semibold text-white mb-4">GitHub Stats</h3>
               <img 
                 src={`https://github-readme-stats.vercel.app/api?username=${githubData.login}&show_icons=true&theme=tokyonight&include_all_commits=true&count_private=true`} 
                 alt="GitHub Stats" 
                 className="w-full h-auto rounded-lg"
+                loading="lazy"
               />
             </div>
-            <div className="backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4">
+            <div className="backdrop-blur-md bg-gray-800/30 border border-gray-700/50 rounded-xl p-4">
               <h3 className="text-lg font-semibold text-white mb-4">Top Languages</h3>
               <img 
                 src={`https://github-readme-stats.vercel.app/api/top-langs/?username=${githubData.login}&layout=compact&langs_count=8&theme=tokyonight`} 
                 alt="Top Languages" 
                 className="w-full h-auto rounded-lg"
+                loading="lazy"
               />
             </div>
           </div>
-          
-          <div className="mt-6 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-4">
+          <div className="mt-6 backdrop-blur-md bg-gray-800/30 border border-gray-700/50 rounded-xl p-4">
             <h3 className="text-lg font-semibold text-white mb-4">Contribution Activity</h3>
             <img 
               src={`https://github-readme-activity-graph.vercel.app/graph?username=${githubData.login}&theme=tokyo-night&bg_color=1a1b27&color=70a5fd&line=bf91f3&point=38bdae&area=true&hide_border=true`} 
               alt="GitHub Activity Graph" 
               className="w-full h-auto rounded-lg"
+              loading="lazy"
             />
           </div>
         </motion.section>
@@ -374,7 +360,7 @@ const ProfilePage = () => {
               <Code className="w-8 h-8" />
               Recent Repositories
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               {repositories.slice(0, 9).map((repo) => (
                 <RepoCard key={repo.id} repo={repo} />
               ))}

@@ -1,23 +1,31 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import ApiProvider from './context/ApiContext';
 import Home from './pages/Home';
 import CreateProfile from './pages/CreateProfile';
 import ProfilePage from './pages/ProfilePage';
-import { Toaster } from 'sonner';
+import NotFound from './pages/404';
 
-function App() {
+const App = () => {
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-900 text-white">
-        <Toaster richColors position="top-right" />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/create" element={<CreateProfile />} />
-          <Route path="/profile/:username" element={<ProfilePage />} />
-        </Routes>
-      </div>
-    </Router>
+    <ApiProvider>
+      <Router>
+        <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
+          {/* Toaster for notifications */}
+          <Toaster richColors position="top-right" />
+          
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/create" element={<CreateProfile />} />
+            <Route path="/profile/:username" element={<ProfilePage />} />
+            {/* Fallback route for 404 */}
+            <Route path="*" element={ <NotFound />} />
+          </Routes>
+        </div>
+      </Router>
+    </ApiProvider>
   );
-}
+};
 
 export default App;
