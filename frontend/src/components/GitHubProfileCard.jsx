@@ -1,67 +1,71 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Github, MapPin, Users, BookOpen, Star } from 'lucide-react';
+import { Github, Star, Users, Code } from 'lucide-react';
 
-const formatNumber = (num) => {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
-  }
-  return num.toString();
-};
-
-const GitHubProfileCard = ({ profile, onClick, compact = false }) => {
-  const { githubData, totalStars } = profile;
+const GitHubProfileCard = ({ profile, onClick }) => {
+  const { githubUsername, githubData, skills = [], projects = [], userId } = profile;
+  const totalStars = profile.repositories?.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0) || 0;
+  const averageRating = userId?.ratings?.length
+    ? (userId.ratings.reduce((sum, r) => sum + r.score, 0) / userId.ratings.length).toFixed(1)
+    : 'N/A';
 
   return (
     <motion.div
-      layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      whileHover={{ y: -5, scale: 1.03 }}
-      className={`backdrop-blur-xl bg-gradient-to-br from-gray-800/20 via-gray-900/20 to-transparent border border-gray-700/50 rounded-2xl p-6 cursor-pointer hover:border-purple-500/50 transition-all duration-300 shadow-lg hover:shadow-xl ${
-        compact ? 'max-w-sm' : ''
-      }`}
-      onClick={() => onClick(profile)}
+      transition={{ duration: 0.5 }}
+      className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 border border-gray-700/30 hover:bg-gray-800/40 transition-all duration-300 cursor-pointer group"
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === 'Enter' && onClick()}
+      aria-label={`View ${githubUsername}'s profile`}
     >
       <div className="flex items-center gap-4 mb-4">
-        <img 
-          src={githubData.avatar_url} 
-          alt={githubData.name || githubData.login}
-          className="w-16 h-16 rounded-full ring-2 ring-purple-400/50 shadow-md"
-          loading="lazy"
+        <img
+          src={githubData?.avatar_url || 'https://via.placeholder.com/64'}
+          alt={`${githubUsername}'s avatar`}
+          className="w-16 h-16 rounded-full border-2 border-gray-600/50 group-hover:border-purple-500/50 transition-all duration-300"
         />
-        <div className="flex-1">
-          <h3 className="text-xl font-bold text-white truncate">
-            {githubData.name || githubData.login}
+        <div>
+          <h3 className="text-lg font-bold text-white group-hover:text-purple-400 transition-colors duration-300">
+            {githubData?.name || githubUsername}
           </h3>
-          <p className="text-purple-300 text-sm">@{githubData.login}</p>
+          <p className="text-sm text-gray-400">@{githubUsername}</p>
         </div>
-        <Github className="w-5 h-5 text-gray-400" />
       </div>
-      
-      {githubData.bio && (
-        <p className="text-gray-300 text-sm mb-4 line-clamp-2">{githubData.bio}</p>
-      )}
-      
-      <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-        {githubData.location && (
-          <div className="flex items-center gap-1">
-            <MapPin className="w-4 h-4" />
-            <span className="truncate">{githubData.location}</span>
-          </div>
+      <p className="text-gray-400 text-sm mb-4 line-clamp-3">{githubData?.bio || profile.customBio || 'No bio available'}</p>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {skills.slice(0, 3).map((skill, index) => (
+          <span
+            key={index}
+            className="px-2 py-1 bg-purple-600/20 text-purple-300 text-xs rounded-full"
+          >
+            {skill}
+          </span>
+        ))}
+        {skills.length > 3 && (
+          <span className="px-2 py-1 bg-gray-600/20 text-gray-300 text-xs rounded-full">
+            +{skills.length - 3}
+          </span>
         )}
-        <div className="flex items-center gap-1">
-          <Users className="w-4 h-4" />
-          <span>{formatNumber(githubData.followers)}</span>
+      </div>
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="flex items-center gap-2">
+          <Star className="w-4 h-4 text-yellow-400" />
+          <span className="text-gray-300">{totalStars} Stars</span>
         </div>
-        <div className="flex items-center gap-1">
-          <BookOpen className="w-4 h-4" />
-          <span>{githubData.public_repos}</span>
+        <div className="flex items-center gap-2">
+          <Code className="w-4 h-4 text-blue-400" />
+          <span className="text-gray-300">{projects.length} Projects</span>
         </div>
-        <div className="flex items-center gap-1">
-          <Star className="w-4 h-4" />
-          <span>{formatNumber(totalStars)}</span>
+        <div className="flex items-center gap-2">
+          <Users className="w-4 h-4 text-green-400" />
+          <span className="text-gray-300">{userId?.groupId ? 'In Group' : 'No Group'}</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Github className="w-4 h-4 text-purple-400" />
+          <span className="text-gray-300">Rating: {averageRating}</span>
         </div>
       </div>
     </motion.div>

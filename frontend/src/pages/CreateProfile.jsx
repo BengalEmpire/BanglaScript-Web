@@ -1,13 +1,17 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Loader2, Github, ArrowLeft, User, Code, Globe, Briefcase, Palette, Eye, EyeOff, Plus, X, Check, Zap, Heart } from 'lucide-react';
+import { Loader2, Github, ArrowLeft, User, Code, Briefcase, Globe, Palette, Eye, EyeOff, Plus, X, Check, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { ApiContext } from '../context/ApiContext';
+import { useStore } from '../store/index';
+import validator from 'validator';
 
 const CreateProfile = () => {
+  const { user, createProfile, loading } = useContext(ApiContext);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    githubUsername: '',
+    githubUsername: user?.username || '',
     customBio: '',
     skills: '',
     projects: [{ name: '', description: '', url: '', tech: '' }],
@@ -18,25 +22,30 @@ const CreateProfile = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [showPreview, setShowPreview] = useState(false);
-  const { createProfile, loading } = useContext(ApiContext);
-  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!user) {
+      toast.error('Please log in to create a profile');
+      navigate('/');
+    } else {
+      setFormData((prev) => ({ ...prev, githubUsername: user.username }));
+      setCompletedSteps((prev) => new Set([...prev, 0]));
+    }
+  }, [user, navigate]);
 
   const steps = [
-    { id: 0, title: 'Basic Info', icon: User, description: 'Tell us about yourself' },
+    { id: 0, title: 'Basic Info', icon: User, description: 'Connect your GitHub account' },
     { id: 1, title: 'Skills & Bio', icon: Code, description: 'Showcase your expertise' },
-    { id: 2, title: 'Projects', icon: Briefcase, description: 'Display your work' },
-    { id: 3, title: 'Social Links', icon: Globe, description: 'Connect with others' },
-    { id: 4, title: 'Customize', icon: Palette, description: 'Make it yours' }
+    { id: 2, title: 'Projects', icon: Briefcase, description: 'Highlight your work' },
+    { id: 3, title: 'Social Links', icon: Globe, description: 'Link your online presence' },
+    { id: 4, title: 'Customize', icon: Palette, description: 'Personalize your profile' }
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (value.trim() && !completedSteps.has(currentStep)) {
-      setCompletedSteps(prev => new Set([...prev, currentStep]));
+      setCompletedSteps((prev) => new Set([...prev, currentStep]));
     }
   };
 
@@ -68,6 +77,8 @@ const CreateProfile = () => {
         ...prev,
         projects: prev.projects.filter((_, i) => i !== index)
       }));
+    } else {
+      toast.error('At least one project is required');
     }
   };
 
@@ -76,19 +87,52 @@ const CreateProfile = () => {
       toast.error('GitHub username is required');
       return false;
     }
+    if (!/^[a-z0-9](?:[a-z0-9]|-(?=[a-z0-9])){0,38}$/i.test(formData.githubUsername)) {
+      toast.error('Invalid GitHub username format');
+      return false;
+    }
     if (formData.customBio.length > 1000) {
       toast.error('Custom bio must be less than 1000 characters');
       return false;
     }
-    if (formData.skills.split(',').length > 50) {
+    const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s);
+    if (skillsArray.length > 50) {
       toast.error('Maximum 50 skills allowed');
       return false;
     }
     for (const project of formData.projects) {
-      if (project.name.trim() && project.url && !/^https?:\/\//.test(project.url)) {
-        toast.error('Project URLs must start with http:// or https://');
+      if (project.name.trim() && project.url && !validator.isURL(project.url)) {
+        toast.error('Project URLs must be valid (e.g., https://example.com)');
         return false;
       }
+      if (project.description.length > 500) {
+        toast.error('Project description must be less than 500 characters');
+        return false;
+      }
+      if (project.name.length > 100) {
+        toast.error('Project name must be less than 100 characters');
+        return false;
+      }
+      const techArray = project.tech.split(',').map(t => t.trim()).filter(t => t);
+      if (techArray.length > 30) {
+        toast.error('Maximum 30 technologies per project');
+        return false;
+      }
+    }
+    const socialLinks = ['linkedin', 'twitter', 'website', 'portfolio'];
+    for (const key of socialLinks) {
+      if (formData.socialLinks[key] && !validator.isURL(formData.socialLinks[key])) {
+        toast.error(`Invalid ${key} URL`);
+        return false;
+      }
+    }
+    if (!formData.theme.primaryColor.match(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)) {
+      toast.error('Invalid primary color format');
+      return false;
+    }
+    if (!formData.theme.secondaryColor.match(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)) {
+      toast.error('Invalid secondary color format');
+      return false;
     }
     return true;
   };
@@ -106,7 +150,7 @@ const CreateProfile = () => {
           tech: p.tech.split(',').map(t => t.trim()).filter(t => t)
         }))
       };
-      await createProfile(profileData);
+      const response = await createProfile(profileData);
       toast.success('Profile created successfully!');
       navigate(`/profile/${formData.githubUsername}`);
     } catch (error) {
@@ -115,8 +159,11 @@ const CreateProfile = () => {
   };
 
   const nextStep = () => {
-    if (currentStep < steps.length - 1) {
+    if (currentStep < steps.length - 1 && getStepCompletion()) {
       setCurrentStep(currentStep + 1);
+      setCompletedSteps((prev) => new Set([...prev, currentStep]));
+    } else {
+      toast.error('Please complete the current step');
     }
   };
 
@@ -146,22 +193,24 @@ const CreateProfile = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mb-4">
                 <Github className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Let's start with the basics</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Connect Your GitHub</h2>
               <p className="text-gray-400">Your GitHub profile is the foundation of your developer identity</p>
             </div>
             <div className="relative group">
               <label className="block text-sm font-semibold text-gray-200 mb-2 flex items-center gap-2">
                 <Github className="w-4 h-4" />
-                GitHub Username or URL
+                GitHub Username
               </label>
               <input
                 type="text"
                 name="githubUsername"
                 value={formData.githubUsername}
                 onChange={handleInputChange}
-                placeholder="Enter your GitHub username or URL"
+                placeholder="Enter your GitHub username"
                 className="w-full px-4 py-4 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all duration-300"
                 required
+                disabled
+                aria-label="GitHub username"
               />
             </div>
           </div>
@@ -173,34 +222,32 @@ const CreateProfile = () => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-full mb-4">
                 <Code className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Show off your expertise</h2>
+              <h2 className="text-2xl font-bold text-white mb-2">Showcase Your Skills</h2>
               <p className="text-gray-400">Tell the world what makes you unique as a developer</p>
             </div>
             <div className="space-y-6">
               <div className="relative group">
-                <label className="block text-sm font-semibold text-gray-200 mb-2">
-                  Your Story
-                </label>
+                <label className="block text-sm font-semibold text-gray-200 mb-2">Your Story</label>
                 <textarea
                   name="customBio"
                   value={formData.customBio}
                   onChange={handleInputChange}
                   placeholder="Write a compelling bio that captures your passion for coding..."
-                  className="w-full px-4 py-4 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all duration-300 resize-none"
-                  rows="5"
+                  className="w-full px-4 py-4 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all duration-300 min-h-[150px]"
+                  aria-label="Custom bio"
                 />
+                <span className="absolute bottom-2 right-3 text-xs text-gray-400">{formData.customBio.length}/1000</span>
               </div>
               <div className="relative group">
-                <label className="block text-sm font-semibold text-gray-200 mb-2">
-                  Skills & Technologies (comma-separated)
-                </label>
+                <label className="block text-sm font-semibold text-gray-200 mb-2">Skills (comma-separated)</label>
                 <input
                   type="text"
                   name="skills"
                   value={formData.skills}
                   onChange={handleInputChange}
-                  placeholder="JavaScript, React, Node.js, Python, AWS..."
-                  className="w-full px-4 py-4 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all duration-300"
+                  placeholder="React, Python, AWS..."
+                  className="w-full px-4 py-4 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500/50 transition-all duration-300"
+                  aria-label="Skills"
                 />
               </div>
             </div>
@@ -210,99 +257,110 @@ const CreateProfile = () => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mb-4">
                 <Briefcase className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Showcase your projects</h2>
-              <p className="text-gray-400">Your work speaks louder than words</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Highlight Your Projects</h2>
+              <p className="text-gray-400">Showcase the amazing work you've built</p>
             </div>
-            <div className="space-y-4">
-              {formData.projects.map((project, index) => (
-                <div key={index} className="relative group bg-gray-900/30 border border-gray-700/50 rounded-xl p-6">
+            {formData.projects.map((project, index) => (
+              <div key={index} className="space-y-4 p-4 bg-gray-900/30 rounded-xl border border-gray-700/30">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-lg font-semibold text-white">Project {index + 1}</h3>
                   {formData.projects.length > 1 && (
                     <button
-                      type="button"
                       onClick={() => removeProject(index)}
-                      className="absolute top-4 right-4 w-8 h-8 bg-red-500/20 hover:bg-red-500/30 rounded-full flex items-center justify-center text-red-400 hover:text-red-300 transition-colors"
+                      className="p-2 text-red-400 hover:text-red-300 transition-colors duration-200"
+                      aria-label="Remove project"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-5 h-5" />
                     </button>
                   )}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-2">Project Name</label>
                     <input
                       type="text"
                       name="name"
                       value={project.name}
                       onChange={(e) => handleProjectChange(index, e)}
                       placeholder="Project Name"
-                      className="px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all"
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+                      aria-label={`Project ${index + 1} name`}
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-200 mb-2">Project URL</label>
                     <input
-                      type="text"
+                      type="url"
                       name="url"
                       value={project.url}
                       onChange={(e) => handleProjectChange(index, e)}
-                      placeholder="Project URL (https://...)"
-                      className="px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all"
+                      placeholder="https://example.com"
+                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+                      aria-label={`Project ${index + 1} URL`}
                     />
                   </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-200 mb-2">Description</label>
                   <textarea
                     name="description"
                     value={project.description}
                     onChange={(e) => handleProjectChange(index, e)}
-                    placeholder="Describe what makes this project special..."
-                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-500/50 transition-all resize-none"
-                    rows="3"
+                    placeholder="Describe your project..."
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 min-h-[100px]"
+                    aria-label={`Project ${index + 1} description`}
                   />
+                  <span className="absolute bottom-2 right-3 text-xs text-gray-400">{project.description.length}/500</span>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-200 mb-2">Technologies (comma-separated)</label>
                   <input
                     type="text"
                     name="tech"
                     value={project.tech}
                     onChange={(e) => handleProjectChange(index, e)}
-                    placeholder="Technologies used (React, Node.js, MongoDB...)"
-                    className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500/50 transition-all"
+                    placeholder="React, Node.js, MongoDB..."
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300"
+                    aria-label={`Project ${index + 1} technologies`}
                   />
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={addProject}
-                className="w-full py-4 border-2 border-dashed border-gray-600 hover:border-orange-500/50 rounded-xl text-gray-400 hover:text-orange-400 transition-all duration-300 flex items-center justify-center gap-2"
-              >
-                <Plus className="w-5 h-5" />
-                Add Another Project
-              </button>
-            </div>
+              </div>
+            ))}
+            <button
+              onClick={addProject}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600/50 hover:bg-green-600/70 rounded-xl text-white transition-all duration-300"
+              aria-label="Add another project"
+            >
+              <Plus className="w-4 h-4" />
+              Add Project
+            </button>
           </div>
         );
       case 3:
         return (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
                 <Globe className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Connect with the world</h2>
-              <p className="text-gray-400">Make it easy for people to find and connect with you</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Connect Your Online Presence</h2>
+              <p className="text-gray-400">Link your social profiles to network with others</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[
-                { key: 'linkedin', label: 'LinkedIn', color: 'blue' },
-                { key: 'twitter', label: 'Twitter/X', color: 'cyan' },
-                { key: 'website', label: 'Website', color: 'indigo' },
-                { key: 'portfolio', label: 'Portfolio', color: 'purple' }
-              ].map(({ key, label, color }) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {['linkedin', 'twitter', 'website', 'portfolio'].map((key) => (
                 <div key={key} className="relative group">
-                  <label className="block text-sm font-semibold text-gray-200 mb-2">
-                    {label}
-                  </label>
+                  <label className="block text-sm font-semibold text-gray-200 mb-2 capitalize">{key}</label>
                   <input
-                    type="text"
+                    type="url"
                     name={key}
                     value={formData.socialLinks[key]}
                     onChange={handleSocialLinkChange}
-                    placeholder={`Your ${label} URL (https://...)`}
-                    className={`w-full px-4 py-4 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-${color}-500/50 transition-all duration-300`}
+                    placeholder={`Enter your ${key} URL`}
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all duration-300"
+                    aria-label={`${key} URL`}
                   />
                 </div>
               ))}
@@ -313,68 +371,71 @@ const CreateProfile = () => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full mb-4">
                 <Palette className="w-8 h-8 text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Make it uniquely yours</h2>
-              <p className="text-gray-400">Customize the look and feel of your profile</p>
+              <h2 className="text-2xl font-bold text-white mb-2">Personalize Your Profile</h2>
+              <p className="text-gray-400">Choose colors and visibility settings</p>
             </div>
-            <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-gray-200 mb-4">
-                  Profile Visibility
-                </label>
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, isPublic: true }))}
-                    className={`flex items-center gap-3 px-6 py-4 rounded-xl border transition-all duration-300 ${
-                      formData.isPublic
-                        ? 'bg-green-500/20 border-green-500/50 text-green-400'
-                        : 'bg-gray-800/50 border-gray-600/50 text-gray-400 hover:border-gray-500/50'
-                    }`}
-                  >
-                    <Eye className="w-5 h-5" />
-                    Public Profile
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData(prev => ({ ...prev, isPublic: false }))}
-                    className={`flex items-center gap-3 px-6 py-4 rounded-xl border transition-all duration-300 ${
-                      !formData.isPublic
-                        ? 'bg-orange-500/20 border-orange-500/50 text-orange-400'
-                        : 'bg-gray-800/50 border-gray-600/50 text-gray-400 hover:border-gray-500/50'
-                    }`}
-                  >
-                    <EyeOff className="w-5 h-5" />
-                    Private Profile
-                  </button>
-                </div>
+                <label className="block text-sm font-semibold text-gray-200 mb-2">Primary Color</label>
+                <input
+                  type="color"
+                  name="primaryColor"
+                  value={formData.theme.primaryColor}
+                  onChange={(e) => setFormData((prev) => ({
+                    ...prev,
+                    theme: { ...prev.theme, primaryColor: e.target.value }
+                  }))}
+                  className="w-full h-12 bg-gray-900/50 border border-gray-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all duration-300"
+                  aria-label="Primary color"
+                />
               </div>
-              <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                  <Star className="w-5 h-5 text-yellow-400" />
-                  Preview Your Profile
-                </h3>
-                <p className="text-gray-300 mb-4">See how your profile will look to others</p>
-                <button
-                  type="button"
-                  onClick={() => setShowPreview(!showPreview)}
-                  className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg text-white font-medium transition-colors duration-300 flex items-center gap-2"
-                >
-                  <Eye className="w-4 h-4" />
-                  {showPreview ? 'Hide Preview' : 'Show Preview'}
-                </button>
-                {showPreview && (
-                  <div className="mt-4 p-4 bg-gray-800/50 rounded-lg" style={{ background: formData.theme.background === 'gradient' ? 'linear-gradient(to right, #1a202c, #2d3748)' : formData.theme.background }}>
-                    <p className="text-white">Preview with theme: {formData.theme.background}</p>
-                    <div className="flex items-center gap-4 mt-2">
-                      <div style={{ backgroundColor: formData.theme.primaryColor, width: 20, height: 20, borderRadius: '50%' }}></div>
-                      <div style={{ backgroundColor: formData.theme.secondaryColor, width: 20, height: 20, borderRadius: '50%' }}></div>
-                    </div>
-                  </div>
-                )}
+              <div>
+                <label className="block text-sm font-semibold text-gray-200 mb-2">Secondary Color</label>
+                <input
+                  type="color"
+                  name="secondaryColor"
+                  value={formData.theme.secondaryColor}
+                  onChange={(e) => setFormData((prev) => ({
+                    ...prev,
+                    theme: { ...prev.theme, secondaryColor: e.target.value }
+                  }))}
+                  className="w-full h-12 bg-gray-900/50 border border-gray-700/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all duration-300"
+                  aria-label="Secondary color"
+                />
               </div>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-200 mb-2">Background Style</label>
+              <select
+                name="background"
+                value={formData.theme.background}
+                onChange={(e) => setFormData((prev) => ({
+                  ...prev,
+                  theme: { ...prev.theme, background: e.target.value }
+                }))}
+                className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700/50 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-teal-500/50 transition-all duration-300"
+                aria-label="Background style"
+              >
+                <option value="gradient">Gradient</option>
+                <option value="solid">Solid</option>
+                <option value="pattern">Pattern</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="isPublic"
+                checked={formData.isPublic}
+                onChange={(e) => setFormData((prev) => ({ ...prev, isPublic: e.target.checked }))}
+                className="w-5 h-5 bg-gray-900/50 border border-gray-700/50 rounded focus:ring-2 focus:ring-teal-500/50"
+                aria-label="Make profile public"
+              />
+              <label htmlFor="isPublic" className="text-sm font-semibold text-gray-200">
+                Make Profile Public
+              </label>
             </div>
           </div>
         );
@@ -384,118 +445,156 @@ const CreateProfile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 relative overflow-hidden">
-      <div className="relative z-10 max-w-4xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 px-4 py-2 bg-gray-800/50 hover:bg-gray-800/70 rounded-lg text-gray-300 hover:text-white transition-all duration-300">
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </button>
-          <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-              Create Your <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">Developer Profile</span>
-            </h1>
-            <p className="text-gray-400">Step {currentStep + 1} of {steps.length}</p>
-          </div>
-          <div className="w-20"></div>
-        </div>
-        <div className="mb-12">
-          <div className="flex items-center justify-between mb-8 overflow-x-auto pb-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-purple-950 relative overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-600/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative z-10 max-w-3xl mx-auto p-6 sm:p-8"
+      >
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors duration-200"
+          aria-label="Back to home"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          Back to Home
+        </button>
+
+        <div className="bg-gray-800/20 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-gray-700/30 shadow-2xl">
+          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-8 text-center">
+            Create Your Developer Profile
+          </h1>
+
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-8">
             {steps.map((step, index) => (
-              <div key={step.id} className="flex flex-col items-center min-w-0 flex-1">
-                <button
-                  onClick={() => setCurrentStep(index)}
-                  className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${
-                    index === currentStep
-                      ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white scale-110'
-                      : completedSteps.has(index)
-                      ? 'bg-green-500 text-white'
-                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
-                  }`}
-                >
-                  {completedSteps.has(index) ? <Check className="w-5 h-5" /> : <step.icon className="w-5 h-5" />}
-                </button>
-                <div className="mt-3 text-center min-w-0">
-                  <p className={`font-medium text-sm whitespace-nowrap ${index === currentStep ? 'text-white' : 'text-gray-400'}`}>
-                    {step.title}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1 hidden sm:block">{step.description}</p>
+              <motion.div
+                key={step.id}
+                className={`flex items-center gap-2 p-3 rounded-xl cursor-pointer transition-all duration-300 ${
+                  currentStep === index
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600'
+                    : completedSteps.has(index)
+                    ? 'bg-green-600/20 border border-green-500/50'
+                    : 'bg-gray-900/50 border border-gray-700/50'
+                }`}
+                onClick={() => setCurrentStep(index)}
+                role="button"
+                aria-label={`Go to ${step.title} step`}
+              >
+                <step.icon className="w-5 h-5 text-white" />
+                <div>
+                  <div className="text-sm font-semibold text-white">{step.title}</div>
+                  <div className="text-xs text-gray-400">{step.description}</div>
                 </div>
-                {index < steps.length - 1 && (
-                  <div className={`absolute top-6 left-1/2 w-full h-0.5 transition-colors duration-500 hidden md:block ${
-                    index < currentStep || completedSteps.has(index) ? 'bg-green-500' : 'bg-gray-700'
-                  }`} style={{ left: '50%', width: 'calc(100% - 24px)', marginLeft: '12px' }} />
+                {completedSteps.has(index) && (
+                  <Check className="w-5 h-5 text-green-400 ml-auto" />
                 )}
-              </div>
+              </motion.div>
             ))}
           </div>
-          <div className="w-full bg-gray-700 rounded-full h-2 overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-700 ease-out"
-              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
-            />
-          </div>
-        </div>
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-8">
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             {renderStepContent()}
-          </div>
-          <div className="flex items-center justify-between">
-            <button
-              type="button"
-              onClick={prevStep}
-              disabled={currentStep === 0}
-              className="px-6 py-3 bg-gray-700/50 hover:bg-gray-700/70 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all duration-300"
-            >
-              Previous
-            </button>
-            <div className="flex items-center gap-4">
-              {currentStep === steps.length - 1 ? (
+
+            <div className="flex justify-between items-center mt-8">
+              <button
+                type="button"
+                onClick={prevStep}
+                disabled={currentStep === 0}
+                className="px-6 py-3 bg-gray-800/50 hover:bg-gray-700/50 disabled:bg-gray-800/30 rounded-xl text-white disabled:text-gray-500 transition-all duration-300"
+                aria-label="Previous step"
+              >
+                Previous
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowPreview(!showPreview)}
+                className="flex items-center gap-2 px-6 py-3 bg-blue-600/50 hover:bg-blue-600/70 rounded-xl text-white transition-all duration-300"
+                aria-label={showPreview ? 'Hide preview' : 'Show preview'}
+              >
+                {showPreview ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPreview ? 'Hide Preview' : 'Show Preview'}
+              </button>
+
+              {currentStep < steps.length - 1 ? (
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl text-white transition-all duration-300"
+                  aria-label="Next step"
+                >
+                  Next
+                </button>
+              ) : (
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 rounded-xl text-white font-semibold transition-all duration-300 flex items-center gap-2"
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 disabled:bg-gray-600/50 rounded-xl text-white transition-all duration-300"
+                  aria-label="Save profile"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      Creating...
+                      Saving...
                     </>
                   ) : (
                     <>
                       <Zap className="w-5 h-5" />
-                      Create Profile
+                      Save Profile
                     </>
                   )}
                 </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl text-white font-medium transition-all duration-300 flex items-center gap-2"
-                >
-                  Next
-                  <ArrowLeft className="w-4 h-4 rotate-180" />
-                </button>
               )}
             </div>
-          </div>
-          {getStepCompletion() && (
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/50 rounded-full text-green-400 text-sm">
-                <Check className="w-4 h-4" />
-                Step completed
+          </form>
+
+          {showPreview && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mt-8 p-6 bg-gray-900/30 rounded-2xl border border-gray-700/30"
+            >
+              <h2 className="text-xl font-bold text-white mb-4">Profile Preview</h2>
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Username</h3>
+                  <p className="text-gray-400">{formData.githubUsername || 'Not set'}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Bio</h3>
+                  <p className="text-gray-400">{formData.customBio || 'Not set'}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Skills</h3>
+                  <p className="text-gray-400">{formData.skills || 'Not set'}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Projects</h3>
+                  {formData.projects.map((project, index) => (
+                    <div key={index} className="ml-4">
+                      <p className="text-gray-400">{project.name || 'Unnamed Project'}</p>
+                      <p className="text-gray-500 text-sm">{project.description || 'No description'}</p>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-white">Social Links</h3>
+                  {Object.entries(formData.socialLinks).map(([key, value]) => (
+                    value && <p key={key} className="text-gray-400">{key}: {value}</p>
+                  ))}
+                </div>
               </div>
-            </div>
+            </motion.div>
           )}
-        </form>
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-center gap-2 text-gray-400">
-            <Heart className="w-4 h-4 text-red-400" />
-            <span>Building amazing developer profiles since 2025</span>
-          </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

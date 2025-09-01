@@ -1,0 +1,12 @@
+graph TD
+    A[Client Browser] -->|HTTP Requests| B[Frontend: React/Vite]
+    B -->|API Calls| C[Backend: Express]
+    B -->|WebSocket| D[Socket.IO/Yjs]
+    C -->|MongoDB Queries| E[MongoDB]
+    C -->|GitHub API| F[GitHub]
+    D -->|Real-time Updates| C
+    B -->|Renders| G[Components]
+    G --> H[Home]
+    G --> I[CreateProfile]
+    G --> J[ProfilePage]
+    G --> K[Editor]

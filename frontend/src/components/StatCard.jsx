@@ -1,18 +1,23 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
-const formatNumber = (num) => {
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
-  }
-  return num.toString();
-};
-
-const StatCard = ({ icon: Icon, label, value, color = 'purple' }) => (
-  <div className={`backdrop-blur-md bg-gray-800/30 border border-gray-700/50 rounded-xl p-4 text-center hover:bg-gray-800/50 hover:border-${color}-500/50 transition-all duration-300`}>
-    <Icon className={`w-6 h-6 mx-auto mb-2 text-${color}-400`} />
-    <div className="text-2xl font-bold text-white mb-1">{formatNumber(value)}</div>
-    <div className="text-xs text-gray-400 uppercase tracking-wide">{label}</div>
-  </div>
+const StatCard = ({ icon: Icon, value, label, color }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.5 }}
+    className="bg-gray-800/30 backdrop-blur-sm rounded-xl p-4 border border-gray-700/30 hover:bg-gray-800/40 transition-all duration-300 group"
+  >
+    <div className="flex items-center gap-3">
+      <div className={`p-2 rounded-lg bg-gradient-to-br ${color} group-hover:scale-110 transition-transform duration-300`}>
+        <Icon className="w-4 h-4 text-white" />
+      </div>
+      <div>
+        <div className="text-lg font-bold text-white">{value.toLocaleString()}</div>
+        <div className="text-xs text-gray-400">{label}</div>
+      </div>
+    </div>
+  </motion.div>
 );
 
 export default StatCard;

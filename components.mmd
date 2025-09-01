@@ -1,0 +1,72 @@
+classDiagram
+    class App {
+        +Routes
+        +ApiProvider
+        +Toaster
+    }
+    class ApiContext {
+        +getProfiles()
+        +createProfile()
+        +getMyGroup()
+        +rateUser()
+        +user
+        +loading
+        +error
+    }
+    class Store {
+        +user
+        +group
+        +setUser()
+        +setGroup()
+    }
+    class Home {
+        +SearchProfiles()
+        +CreateGroup()
+        +DisplayStats()
+    }
+    class CreateProfile {
+        +MultiStepForm()
+        +ValidateInputs()
+        +PreviewProfile()
+    }
+    class ProfilePage {
+        +DisplayProfile()
+        +ShowRepos()
+        +ShowGroup()
+        +ShowRatings()
+    }
+    class Editor {
+        +CodeMirrorEditor()
+        +YjsCollaboration()
+        +ShowPreview()
+        +RateCollaborators()
+    }
+    class GitHubProfileCard {
+        +RenderProfile()
+        +ShowStats()
+    }
+    class RepoCard {
+        +RenderRepo()
+    }
+    class StatCard {
+        +RenderStat()
+    }
+    class LoadingSpinner {
+        +RenderSpinner()
+    }
+    App --> ApiContext : Uses
+    App --> Store : Uses
+    App --> Home : Renders
+    App --> CreateProfile : Renders
+    App --> ProfilePage : Renders
+    App --> Editor : Renders
+    Home --> GitHubProfileCard : Renders
+    Home --> StatCard : Renders
+    Home --> LoadingSpinner : Renders
+    CreateProfile --> ApiContext : Uses
+    CreateProfile --> Store : Uses
+    ProfilePage --> GitHubProfileCard : Renders
+    ProfilePage --> RepoCard : Renders
+    Editor --> ApiContext : Uses
+    Editor --> Store : Uses
+    Editor --> LoadingSpinner : Renders
