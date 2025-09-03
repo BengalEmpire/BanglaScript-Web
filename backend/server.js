@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const connectDB = require("./config/db")
 const passport = require('passport');
 const GitHubStrategy = require('passport-github2').Strategy;
 const session = require('express-session');
@@ -11,7 +12,7 @@ const rateLimit = require('express-rate-limit');
 const jwt = require('jsonwebtoken');
 const http = require('http');
 const { Server } = require('socket.io');
-const { SocketIOProviderServer } = require('y-socket.io');
+const { setupWSConnection } = require('y-socket.io/dist/server');
 require('dotenv').config();
 
 const app = express();
@@ -23,7 +24,6 @@ const io = new Server(server, {
     credentials: true
   }
 });
-const ysocketio = new SocketIOProviderServer(io);
 
 const cache = new NodeCache({ stdTTL: 600, checkperiod: 120 });
 
@@ -37,7 +37,7 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_session_secret',
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: { secure: process.env.NODE_ENV === 'production' }
@@ -53,26 +53,14 @@ const limiter = rateLimit({
 });
 app.use(limiter);
 
-// MongoDB Connection
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
-    console.log('✅ Connected to MongoDB');
-  } catch (err) {
-    console.error('❌ MongoDB connection error:', err);
-    process.exit(1);
-  }
-};
+// Database initialize
 connectDB();
 
 // Passport Config
 passport.use(new GitHubStrategy({
   clientID: process.env.GITHUB_CLIENT_ID,
   clientSecret: process.env.GITHUB_CLIENT_SECRET,
-  callbackURL: `${process.env.FRONTEND_URL}/auth/github/callback`
+  callbackURL: `${process.env.BACKEND_URL}/auth/github/callback`
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     let user = await User.findOne({ githubId: profile.id });
@@ -487,6 +475,11 @@ app.get('/api/analytics', asyncHandler(async (req, res) => {
     groupStats: groupStats[0] || { totalGroups: 0, totalMembers: 0, totalEdits: 0 }
   });
 }));
+
+// later, bind Yjs to Socket.IO
+io.on('connection', (socket) => {
+  setupWSConnection(socket, socket.request);
+});
 
 // Socket.IO for Collaboration
 io.on('connection', (socket) => {
