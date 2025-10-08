@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Header } from "@/components/header"
+import SyntaxTable from "@/components/syntaxTable"
 import { Footer } from "@/components/footer"
 
 
@@ -29,7 +30,7 @@ const BlogPage = () => {
         </motion.p>
       </header>
 
-      
+      <SyntaxTable />
 
       {/* Footer Section */}
       <footer className="mb-5 text-center text-gray-600">

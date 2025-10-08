@@ -15,7 +15,7 @@ interface PlaygroundLayoutProps {
 const DEFAULT_TITLE = "BanglaScript Playground – Write Bangla Code";
 const DEFAULT_DESCRIPTION =
   "Interactive BanglaScript editor. Write Bangla code and see JavaScript transpiled to JS in real-time.";
-const DEFAULT_KEYWORDS = "BanglaScript, Bangla programming, code editor, JavaScript transpiler, interactive coding, programming tool";
+const DEFAULT_KEYWORDS = "BanglaScript, Bangla programming, code editor, JavaScript transpiler, interactive coding, programming tool, Bangla code, Web code editor, web IDE, online coding, learn programming, coding practice, coding playground, BanglaScript playground, BanglaScript Variable and Function names, BanglaScript keywords, lists";
 const DEFAULT_OG_IMAGE = "https://bangla-script.vercel.app/BanglaScript-Logo.png";
 const DEFAULT_CANONICAL_URL = "https://bangla-script.vercel.app/playground";
 
@@ -87,7 +87,7 @@ export default function PlaygroundLayout({
   };
 
   return (
-    <html lang="en">
+    <html>
       <head>
         {/* Core Metadata */}
         <title>{metadata.title}</title>

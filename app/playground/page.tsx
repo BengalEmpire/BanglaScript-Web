@@ -1,16 +1,26 @@
-// app/playground/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Play, RotateCcw, Copy, Check, Download, Lightbulb, Code2, Terminal } from "lucide-react";
+import { Play, RotateCcw, Copy, Check, Download, Lightbulb, Code2, Terminal, Zap } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import OpenInAI from "@/components/OpenInChatGPT";
 import { transpile, executeCode } from "@/lib/transpiler";
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import  Syntax from "@/components/syntax";
+
+interface TranspileResult {
+  success: boolean;
+  output?: string;
+  error?: string;
+}
+
+interface ExecuteResult {
+  success: boolean;
+  output?: string;
+  error?: string;
+}
 
 interface Example {
   title: string;
@@ -19,22 +29,24 @@ interface Example {
 
 const examples: Example[] = [
   {
-    title: "Hello World",
-    code: `লিখো("হ্যালো, বিশ্ব!");
-লিখো("Welcome to BanglaScript!");`
+    title: "হ্যালো ওয়ার্ল্ড",
+    code: `লিখো("হ্যালো, বিশ্ব! 🌍");
+লিখো("BanglaScript এ স্বাগতম!");`
   },
   {
-    title: "Variables & Functions",
-    code: `সংখ্যা নাম = "রহিম";
-ধ্রুবক বয়স = ২৫;
+    title: "ভেরিয়েবল ও ফাংশন",
+    code: `শব্দ নাম = "মাহমুদ";
+ধ্রুবক বয়স = ২০;
+পরিবর্তনশীল পেশা = "একজন কম্পিউটার প্রোগ্রামার"
 অনুষ্ঠান পরিচয়(ব্যক্তি) {
     লিখো("নাম: " + ব্যক্তি);
     লিখো("বয়স: " + বয়স);
+    লিখো("পেশা: " + পেশা);
 }
 পরিচয়(নাম);`
   },
   {
-    title: "Conditionals",
+    title: "কন্ডিশনাল",
     code: `সংখ্যা নম্বর = ৮৫;
 যদি (নম্বর >= ৮০) {
     লিখো("গ্রেড: A+ 🎉");
@@ -45,7 +57,7 @@ const examples: Example[] = [
 }`
   },
   {
-    title: "Loops",
+    title: "লুপ",
     code: `লিখো("🔢 সংখ্যা গণনা:");
 জন্য (সংখ্যা i = ১; i <= ৫; i++) {
     লিখো("→ সংখ্যা: " + i);
@@ -53,7 +65,7 @@ const examples: Example[] = [
 লিখো("\\n✨ সম্পন্ন!");`
   },
   {
-    title: "Arrays",
+    title: "অ্যারে",
     code: `শব্দ ফল = ["আম", "কলা", "আপেল", "কমলা"];
 লিখো("🍎 ফলের তালিকা:");
 জন্য (সংখ্যা i = ০; i < ফল.length; i++) {
@@ -61,7 +73,7 @@ const examples: Example[] = [
 }`
   },
   {
-    title: "Advanced Example",
+    title: "রিকার্সন",
     code: `অনুষ্ঠান ফ্যাক্টরিয়াল(n) {
     যদি (n <= ১) {
         প্রেরণ ১;
@@ -74,26 +86,32 @@ const examples: Example[] = [
   }
 ];
 
-const defaultCode = examples[1].code;
+interface CodeEditorProps {
+  value: string;
+  onChange: (newValue: string) => void;
+}
 
-function CodeEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) {
-  const [lineCount, setLineCount] = useState(1);
+function CodeEditor({ value, onChange }: CodeEditorProps) {
+  const [lineCount, setLineCount] = useState<number>(1);
+
   useEffect(() => {
     const lines = value.split('\n').length;
     setLineCount(lines);
   }, [value]);
+
   return (
-    <div className="relative flex h-full bg-black border border-gray-800 rounded-lg overflow-hidden">
-      <div className="flex-shrink-0 bg-gray-950 text-gray-600 text-right pr-3 pl-2 py-3 select-none border-r border-gray-800 font-mono text-sm leading-6">
-        {Array.from({ length: Math.max(lineCount, 10) }, (_, i) => (
-          <div key={i} className="h-6">{i + 1}</div>
+    <div className="relative flex h-full bg-gray-950 border border-gray-800 rounded-xl overflow-hidden shadow-2xl">
+      <div className="flex-shrink-0 bg-gray-900 text-gray-500 text-right pr-4 pl-3 py-4 select-none border-r border-gray-800 font-mono text-sm leading-6">
+        {Array.from({ length: Math.max(lineCount, 15) }, (_, i) => (
+          <div key={i} className="h-6 hover:text-gray-400 transition-colors">{i + 1}</div>
         ))}
       </div>
       <textarea
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="flex-1 bg-black text-gray-100 p-3 font-mono text-sm leading-6 resize-none focus:outline-none"
+        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
+        className="flex-1 bg-gray-950 text-gray-100 p-4 font-mono text-sm leading-6 resize-none focus:outline-none placeholder:text-gray-600"
         spellCheck={false}
+        placeholder="এখানে BanglaScript কোড লিখুন..."
         style={{ tabSize: 2 }}
       />
     </div>
@@ -101,24 +119,22 @@ function CodeEditor({ value, onChange }: { value: string; onChange: (value: stri
 }
 
 export default function PlaygroundPage() {
-  const [banglaCode, setBanglaCode] = useState(defaultCode);
-  const [jsCode, setJsCode] = useState("");
-  const [output, setOutput] = useState("");
-  const [error, setError] = useState("");
-  const [copied, setCopied] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [activeTab, setActiveTab] = useState("javascript");
+  const [banglaCode, setBanglaCode] = useState<string>(examples[1].code);
+  const [jsCode, setJsCode] = useState<string>("");
+  const [output, setOutput] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [copied, setCopied] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<string>("javascript");
   const [executionTime, setExecutionTime] = useState<number | null>(null);
 
   const handleTranspile = () => {
     setIsProcessing(true);
     const startTime = performance.now();
-   
-    const result = transpile(banglaCode);
+    const result: TranspileResult = transpile(banglaCode);
     const endTime = performance.now();
-   
     if (result.success) {
-      setJsCode(result.output);
+      setJsCode(result.output || "");
       setError("");
       setExecutionTime(endTime - startTime);
     } else {
@@ -133,32 +149,28 @@ export default function PlaygroundPage() {
   const handleRun = () => {
     setIsProcessing(true);
     const startTime = performance.now();
-   
-    const transpileResult = transpile(banglaCode);
-    if (!transpileResult.success) {
-      setError(transpileResult.error || "Transpilation failed");
-      setIsProcessing(false);
-      setActiveTab("console");
-      return;
-    }
-    setJsCode(transpileResult.output);
-    const executeResult = executeCode(transpileResult.output);
-    const endTime = performance.now();
-    if (executeResult.success) {
-      setOutput(executeResult.output);
-      setError("");
-      setExecutionTime(endTime - startTime);
+    const transpileResult: TranspileResult = transpile(banglaCode);
+    if (transpileResult.success) {
+      setJsCode(transpileResult.output || "");
+      const executeResult: ExecuteResult = executeCode(transpileResult.output || "");
+      const endTime = performance.now();
+      if (executeResult.success) {
+        setOutput(executeResult.output || "");
+        setError("");
+        setExecutionTime(endTime - startTime);
+      } else {
+        setError(executeResult.error || "Execution failed");
+        setOutput("");
+      }
     } else {
-      setError(executeResult.error || "Execution failed");
-      setOutput("");
+      setError(transpileResult.error || "Transpilation failed");
     }
-   
     setIsProcessing(false);
     setActiveTab("console");
   };
 
   const handleReset = () => {
-    setBanglaCode(defaultCode);
+    setBanglaCode(examples[1].code);
     setJsCode("");
     setOutput("");
     setError("");
@@ -182,23 +194,37 @@ export default function PlaygroundPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white text-black">
-      < Header />
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <Header/>
       {/* Header */}
-      <header className="border-b border-gray-200">
+      <header className="border-b border-gray-200 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
+              <div className="h-10 w-10 bg-black rounded-lg flex items-center justify-center shadow-lg">
+                <span className="text-white text-lg font-bold">ব</span>
+              </div>
               <div>
-                <h1 className="text-2xl font-bold">BanglaScript Playground</h1>
-                <p className="text-sm text-gray-600">Write and execute BanglaScript in real-time <span className="underline decoration-pink-500">Under development</span></p>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                  BanglaScript Playground
+                </h1>
+                <p className="text-sm text-gray-600">
+                  বাংলায় প্রোগ্রামিং করুন •
+                  <a href="https://www.npmjs.com/package/banglascript" target="_blank" rel="noopener noreferrer" className="ml-1 text-emerald-600 hover:underline">
+                    NPM প্যাকেজ দেখুন
+                  </a>
+                </p>
               </div>
             </div>
-            <OpenInAI pageUrl={typeof window !== 'undefined' ? window.location.href : ''} />
+            <div className="flex items-center gap-2">
+              <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full border border-yellow-200">
+                ⚠️ ডেভেলপমেন্ট মোড
+              </span>
+            </div>
           </div>
         </div>
       </header>
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-8">
         {/* Examples Bar */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -206,18 +232,25 @@ export default function PlaygroundPage() {
           className="mb-6"
         >
           <div className="flex items-center gap-2 mb-3">
-            <Lightbulb className="h-4 w-4" />
-            <span className="text-sm font-medium">Quick Examples:</span>
+            <Lightbulb className="h-5 w-5 text-yellow-600" />
+            <span className="text-sm font-semibold text-gray-700">উদাহরণ দেখুন:</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {examples.map((example, index) => (
-              <button
+              <motion.button
                 key={index}
-                onClick={() => setBanglaCode(example.code)}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => {
+                  setBanglaCode(example.code);
+                  setJsCode("");
+                  setOutput("");
+                  setError("");
+                }}
+                className="px-4 py-2 text-sm font-medium bg-white border-2 border-gray-200 rounded-lg hover:border-emerald-500 hover:bg-emerald-50 transition-all shadow-sm"
               >
                 {example.title}
-              </button>
+              </motion.button>
             ))}
           </div>
         </motion.div>
@@ -226,44 +259,68 @@ export default function PlaygroundPage() {
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-6 flex flex-wrap gap-3 items-center"
+          className="mb-6 flex flex-wrap gap-3 items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm"
         >
           <Button
             onClick={handleRun}
             disabled={isProcessing}
-            className="bg-black text-white hover:bg-gray-800"
+            className="bg-black text-white hover:from-emerald-600 hover:to-green-700 shadow-lg shadow-emerald-500/30"
           >
             <Play className="mr-2 h-4 w-4" />
-            {isProcessing ? 'Processing...' : 'Run Code'}
+            {isProcessing ? 'প্রসেসিং...' : 'কোড চালান'}
           </Button>
           <Button
             onClick={handleTranspile}
             disabled={isProcessing}
             variant="outline"
-            className="border-gray-300"
+            className="border-2 border-blue-500 text-blue-600 hover:bg-blue-50"
           >
             <Code2 className="mr-2 h-4 w-4" />
-            Transpile Only
+            শুধু Transpile করুন
           </Button>
-          <Button onClick={handleReset} variant="outline" className="border-gray-300">
+          <Button
+            onClick={handleReset}
+            variant="outline"
+            className="border-2 border-gray-300 hover:bg-gray-50"
+          >
             <RotateCcw className="mr-2 h-4 w-4" />
-            Reset
+            রিসেট
           </Button>
           {jsCode && (
             <>
-              <Button onClick={handleCopy} variant="outline" className="border-gray-300">
-                {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-                {copied ? "Copied!" : "Copy JS"}
+              <Button
+                onClick={handleCopy}
+                variant="outline"
+                className="border-2 border-gray-300 hover:bg-gray-50"
+              >
+                {copied ? (
+                  <>
+                    <Check className="mr-2 h-4 w-4 text-green-600" />
+                    <span className="text-green-600">কপি হয়েছে!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="mr-2 h-4 w-4" />
+                    JS কপি করুন
+                  </>
+                )}
               </Button>
-              <Button onClick={handleDownload} variant="outline" className="border-gray-300">
+              <Button
+                onClick={handleDownload}
+                variant="outline"
+                className="border-2 border-gray-300 hover:bg-gray-50"
+              >
                 <Download className="mr-2 h-4 w-4" />
-                Download
+                ডাউনলোড
               </Button>
             </>
           )}
           {executionTime !== null && (
-            <div className="ml-auto flex items-center gap-2 text-sm text-gray-600">
-              <span>{executionTime.toFixed(2)}ms</span>
+            <div className="ml-auto flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg">
+              <Zap className="h-4 w-4 text-yellow-600" />
+              <span className="text-sm font-medium text-gray-700">
+                {executionTime.toFixed(2)}ms
+              </span>
             </div>
           )}
         </motion.div>
@@ -275,13 +332,13 @@ export default function PlaygroundPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="mb-3 flex items-center gap-2">
-              <div className="h-6 w-6 bg-black rounded flex items-center justify-center">
-                <span className="text-white text-xs font-bold">বা</span>
+            <div className="mb-4 flex items-center gap-3">
+              <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center shadow-md">
+                <span className="text-white text-sm font-bold">ব</span>
               </div>
-              <h2 className="text-lg font-semibold">BanglaScript Code</h2>
+              <h2 className="text-lg font-bold text-gray-800">BanglaScript Code</h2>
             </div>
-            <div className="h-[600px]">
+            <div className="h-[650px]">
               <CodeEditor value={banglaCode} onChange={setBanglaCode} />
             </div>
           </motion.div>
@@ -292,64 +349,82 @@ export default function PlaygroundPage() {
             transition={{ delay: 0.3 }}
           >
             <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-lg font-semibold">Output</h2>
-                <TabsList className="bg-gray-100">
-                  <TabsTrigger value="javascript" className="data-[state=active]:bg-white">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-800">আউটপুট</h2>
+                <TabsList className="bg-gray-200 p-1 rounded-lg">
+                  <TabsTrigger
+                    value="javascript"
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4"
+                  >
                     <Code2 className="h-4 w-4 mr-2" />
                     JavaScript
                   </TabsTrigger>
-                  <TabsTrigger value="console" className="data-[state=active]:bg-white">
+                  <TabsTrigger
+                    value="console"
+                    className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4"
+                  >
                     <Terminal className="h-4 w-4 mr-2" />
                     Console
                   </TabsTrigger>
                 </TabsList>
               </div>
               <TabsContent value="javascript" className="flex-1 mt-0">
-                <div className="h-[600px] bg-black border border-gray-800 rounded-lg p-4 overflow-auto">
+                <div className="h-[650px] bg-gray-950 border border-gray-800 rounded-xl p-6 overflow-auto shadow-2xl">
                   {jsCode ? (
                     <pre className="text-gray-100 font-mono text-sm leading-6">
                       <code>{jsCode}</code>
                     </pre>
                   ) : (
-                    <div className="h-full flex items-center justify-center text-gray-600">
-                      Transpiled JavaScript will appear here...
+                    <div className="h-full flex flex-col items-center justify-center text-gray-500">
+                      <Code2 className="h-16 w-16 mb-4 opacity-20" />
+                      <p className="text-center">
+                        Transpiled JavaScript এখানে দেখাবে...<br/>
+                        <span className="text-xs">কোড লিখে "Transpile করুন" বাটনে ক্লিক করুন</span>
+                      </p>
                     </div>
                   )}
                 </div>
               </TabsContent>
               <TabsContent value="console" className="flex-1 mt-0">
-                <div className="h-[600px] bg-black border border-gray-800 rounded-lg p-4 font-mono text-sm overflow-auto">
+                <div className="h-[650px] bg-gray-950 border border-gray-800 rounded-xl p-6 font-mono text-sm overflow-auto shadow-2xl">
                   <AnimatePresence mode="wait">
                     {error ? (
-                      <motion.pre
+                      <motion.div
                         key="error"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-red-400"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="bg-red-500/10 border border-red-500/30 rounded-lg p-4"
                       >
-                        ❌ Error: {error}
-                      </motion.pre>
+                        <pre className="text-red-400 whitespace-pre-wrap">
+                          ❌ Error: {error}
+                        </pre>
+                      </motion.div>
                     ) : output ? (
-                      <motion.pre
+                      <motion.div
                         key="output"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="text-green-400 whitespace-pre-wrap"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="bg-green-500/10 border border-green-500/30 rounded-lg p-4"
                       >
-                        {output}
-                      </motion.pre>
+                        <pre className="text-green-400 whitespace-pre-wrap">
+                          {output}
+                        </pre>
+                      </motion.div>
                     ) : (
                       <motion.div
                         key="empty"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="h-full flex items-center justify-center text-gray-600"
+                        className="h-full flex flex-col items-center justify-center text-gray-500"
                       >
-                        Run your code to see output here...
+                        <Terminal className="h-16 w-16 mb-4 opacity-20" />
+                        <p className="text-center">
+                          Console আউটপুট এখানে দেখাবে...<br/>
+                          <span className="text-xs">"কোড চালান" বাটনে ক্লিক করে শুরু করুন</span>
+                        </p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -358,58 +433,9 @@ export default function PlaygroundPage() {
             </Tabs>
           </motion.div>
         </div>
-        {/* Quick Reference */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="mt-8"
-        >
-          <Card className="border-gray-200">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Quick Reference Guide</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
-                <div>
-                  <h4 className="font-semibold mb-2 text-black">Variables</h4>
-                  <div className="space-y-1 text-gray-600">
-                    <div><code className="bg-gray-100 px-1 rounded">সংখ্যা x = ১০</code></div>
-                    <div><code className="bg-gray-100 px-1 rounded">বাক্য নাম = "মান"</code></div>
-                    <div><code className="bg-gray-100 px-1 rounded">ধ্রুবক PI = ৩.১৪</code></div>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2 text-black">Functions</h4>
-                  <div className="space-y-1 text-gray-600">
-                    <div><code className="bg-gray-100 px-1 rounded">অনুষ্ঠান নাম() {'{}'}</code></div>
-                    <div><code className="bg-gray-100 px-1 rounded">প্রেরণ মান</code></div>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2 text-black">Control Flow</h4>
-                  <div className="space-y-1 text-gray-600">
-                    <div><code className="bg-gray-100 px-1 rounded">যদি (শর্ত) {'{}'}</code></div>
-                    <div><code className="bg-gray-100 px-1 rounded">নাহলে {'{}'}</code></div>
-                    <div><code className="bg-gray-100 px-1 rounded">যখন (শর্ত) {'{}'}</code></div>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2 text-black">Console</h4>
-                  <div className="space-y-1 text-gray-600">
-                    <div><code className="bg-gray-100 px-1 rounded">লিখো("বার্তা")</code></div>
-                    <div><code className="bg-gray-100 px-1 rounded">সমস্যা_লিখো("error")</code></div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 pt-4 border-t border-gray-200">
-                <h4 className="font-semibold mb-2 text-black">Bengali Numbers</h4>
-                <code className="text-gray-600 bg-gray-100 px-2 py-1 rounded">০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯</code>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
       </div>
-      {/* Footer */}
-      < Footer />
+      <Syntax/>
+      <Footer/>
     </div>
   );
 }
