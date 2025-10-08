@@ -24,7 +24,7 @@ export const metadata = {
     "BanglaScript is a Bangla-to-JavaScript transpiler that enables developers to write programs in Bengali syntax. Write in Bangla, Run in JavaScript.",
   keywords:
     "BanglaScript, Bengali Programming, Bangla Language Transpiler, Bengali Developers, JavaScript, Open Source, Developer Tools",
-  authors: [{ name: "BanglaScript Team" }],
+  authors: [{ name: "Mahmud Rahman" }],
   openGraph: {
     title: "BanglaScript - Write JavaScript in Bengali",
     description:
@@ -38,7 +38,6 @@ export const metadata = {
     title: "BanglaScript - Write JavaScript in Bengali",
     description: "Write programs in Bengali syntax and compile to JavaScript.",
   },
-    generator: 'v0.app'
 }
 
 export default function RootLayout({

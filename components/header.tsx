@@ -49,7 +49,7 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="icon" asChild className="hidden sm:inline-flex">
-            <a href="https://github.com/banglascript" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/BengalEmpire/BanglaScript" target="_blank" rel="noopener noreferrer">
               <Github className="h-5 w-5" />
               <span className="sr-only">GitHub</span>
             </a>
