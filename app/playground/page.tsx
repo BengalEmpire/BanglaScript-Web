@@ -11,6 +11,7 @@ import { Play, RotateCcw, Copy, Check, Download, Lightbulb } from "lucide-react"
 import { motion } from "framer-motion"
 import { parse } from "@babel/parser"
 import generate from "@babel/generator"
+import OpenInChatGPT from "@/components/OpenInChatGPT";
 
 const KEYWORDS: { [key: string]: string } = {
   'সংখ্যা': 'let',
@@ -308,17 +309,38 @@ export default function PlaygroundPage() {
 
       <main className="flex-1 border-b border-border">
         <div className="container px-4 py-8 mx-auto w-full max-w-7xl">
-          <div className="mb-8 text-center">
+          <div className="mb-8 text-center">       
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="mb-3 text-4xl font-bold">Interactive Playground</h1>
-              <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                Write BanglaScript code and see it transpile to JavaScript in real-time. Run your code to see the output.
-              </p>
+              <div
+                className="
+                  grid 
+                  grid-cols-1 
+                  md:grid-cols-3
+                  items-center 
+                  gap-2
+                  text-center 
+                  md:text-left
+                "
+              >
+
+                <div className="hidden md:block" />
+                <div className="flex flex-col items-center text-center md:items-start">
+                  <h1 className="text-4xl font-bold">Interactive Playground</h1>
+                  <p className="text-lg text-muted-foreground leading-relaxed p-2 max-w-2xl">
+                    Write BanglaScript code and see it transpile to JavaScript in real-time. Run your code to see the output.
+                  </p>
+                </div>
+
+                <div className="flex justify-center md:justify-end mt-4 md:mt-0 pr-4">
+                  <OpenInChatGPT pageUrl="https://bangla-script.vercel.app/playground" />
+                </div>
+              </div>
             </motion.div>
+
           </div>
 
           {/* Example Buttons */}

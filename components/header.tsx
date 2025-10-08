@@ -26,7 +26,7 @@ export function Header() {
         <div className="flex items-center gap-8">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <span className="font-mono text-lg font-bold text-primary-foreground">বা</span>
+              <span className="font-mono text-lg font-bold text-primary-foreground">ব</span>
             </div>
             <span className="text-xl font-bold">BanglaScript</span>
           </Link>

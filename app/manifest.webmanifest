@@ -1,0 +1,29 @@
+{
+  "name": "BanglaScript — Write in Bangla, Run in JavaScript",
+  "short_name": "BanglaScript",
+  "description": "BanglaScript (BJS) is a powerful Bangla-to-JavaScript transpiler that lets you write code in Bengali syntax and execute it as native JavaScript. Empowering developers to code naturally in Bangla.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "lang": "bn",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "BanglaScript-Logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "BanglaScript-Logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+  ],
+  "categories": ["developer-tools", "education", "programming"],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "id": "com.banglascript.app"
+}
