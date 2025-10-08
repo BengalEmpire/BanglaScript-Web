@@ -1,503 +1,415 @@
-"use client"
+// app/playground/page.tsx
+"use client";
 
-import { useState } from "react"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Play, RotateCcw, Copy, Check, Download, Lightbulb, Code2, Terminal } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import OpenInAI from "@/components/OpenInChatGPT";
+import { transpile, executeCode } from "@/lib/transpiler";
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Play, RotateCcw, Copy, Check, Download, Lightbulb } from "lucide-react"
-import { motion } from "framer-motion"
-import { parse } from "@babel/parser"
-import generate from "@babel/generator"
-import OpenInChatGPT from "@/components/OpenInChatGPT";
 
-const KEYWORDS: { [key: string]: string } = {
-  'সংখ্যা': 'let',
-  'শব্দ': 'let',
-  'বাক্য': 'let',
-  'ধ্রুবক': 'const',
-  'অনুষ্ঠান': 'function',
-  'প্রেরণ': 'return',
-  'যদি': 'if',
-  'নাহলে': 'else',
-  'অন্যথায়': 'else',
-  'যখন': 'while',
-  'জন্য': 'for',
-  'থামাও': 'break',
-  'চালিয়ে_যাও': 'continue',
-  'নতুন': 'new',
-  'শ্রেণী': 'class',
-  'গঠন': 'constructor',
-  'লিখো': 'console.log',
-  'সমস্যা_লিখো': 'console.error',
-  'পাওয়া': 'console.info',
-  'পাঠাও': 'console.warn',
-  'সত্য': 'true',
-  'মিথ্যা': 'false',
-  'শূন্য': 'null',
-  'শুন্য': 'null',
-  'চেষ্টা': 'try',
-  'ধরো': 'catch',
-  'অবশেষে': 'finally',
-  'ফেলা': 'throw',
-  'অপেক্ষা': 'await',
-  'প্রতিজ্ঞা': 'Promise'
-};
-
-const BENGALI_DIGIT_START = 0x09E6;
-
-function bengaliDigitsToAscii(str: string): string {
-  return str.replace(/[\u09E6-\u09EF]/g, (ch) => {
-    const code = ch.charCodeAt(0);
-    return String(code - BENGALI_DIGIT_START);
-  });
+interface Example {
+  title: string;
+  code: string;
 }
 
-function isUnicodeLetter(ch: string): boolean {
-  try {
-    return /\p{L}/u.test(ch);
-  } catch (e) {
-    return /[A-Za-z\u00C0-\u024F\u0900-\u097F\u0980-\u09FF]/.test(ch);
-  }
+const examples: Example[] = [
+  {
+    title: "Hello World",
+    code: `লিখো("হ্যালো, বিশ্ব!");
+লিখো("Welcome to BanglaScript!");`
+  },
+  {
+    title: "Variables & Functions",
+    code: `সংখ্যা নাম = "রহিম";
+ধ্রুবক বয়স = ২৫;
+অনুষ্ঠান পরিচয়(ব্যক্তি) {
+    লিখো("নাম: " + ব্যক্তি);
+    লিখো("বয়স: " + বয়স);
 }
-
-interface Token {
-  type: string;
-  text: string;
-}
-
-function tokenizePreserve(code: string): Token[] {
-  const tokens: Token[] = [];
-  const n = code.length;
-  let i = 0;
-
-  while (i < n) {
-    const ch = code[i];
-
-    if (ch === '"' || ch === "'" || ch === '`') {
-      const quote = ch;
-      let j = i + 1;
-      let esc = false;
-      while (j < n) {
-        const c = code[j];
-        if (esc) { esc = false; j++; continue; }
-        if (c === '\\') { esc = true; j++; continue; }
-        if (c === quote) { j++; break; }
-        j++;
-      }
-      tokens.push({ type: 'string', text: code.slice(i, j) });
-      i = j;
-      continue;
-    }
-
-    if (ch === '/' && code[i+1] === '/') {
-      let j = i + 2;
-      while (j < n && code[j] !== '\n') j++;
-      tokens.push({ type: 'comment', text: code.slice(i, j) });
-      i = j;
-      continue;
-    }
-    if (ch === '/' && code[i+1] === '*') {
-      let j = i + 2;
-      while (j < n && !(code[j] === '*' && code[j+1] === '/')) j++;
-      j += 2;
-      if (j > n) j = n;
-      tokens.push({ type: 'comment', text: code.slice(i, j) });
-      i = j;
-      continue;
-    }
-
-    if (/[0-9\u09E6-\u09EF]/.test(ch)) {
-      let j = i + 1;
-      while (j < n && (/[0-9\u09E6-\u09EF]/.test(code[j]) || code[j] === '.')) j++;
-      tokens.push({ type: 'number', text: code.slice(i, j) });
-      i = j;
-      continue;
-    }
-
-    if (isUnicodeLetter(ch) || ch === '_' || ch === '$') {
-      let j = i + 1;
-      while (j < n) {
-        const c = code[j];
-        if (isUnicodeLetter(c) || c === '_' || c === '$' || /[0-9\u09E6-\u09EF]/.test(c)) { j++; continue; }
-        break;
-      }
-      tokens.push({ type: 'word', text: code.slice(i, j) });
-      i = j;
-      continue;
-    }
-
-    tokens.push({ type: 'symbol', text: ch });
-    i++;
-  }
-
-  return tokens;
-}
-
-function tokensToInterimJS(tokens: Token[]): string {
-  return tokens.map(t => {
-    if (t.type === 'string' || t.type === 'comment') return t.text;
-    if (t.type === 'word') {
-      if (KEYWORDS.hasOwnProperty(t.text)) return KEYWORDS[t.text];
-      return t.text;
-    }
-    if (t.type === 'number') {
-      return bengaliDigitsToAscii(t.text);
-    }
-    return t.text;
-  }).join('');
-}
-
-function transpile(code_bjs: string): { success: boolean, output: string, error?: string } {
-  try {
-    const tokens = tokenizePreserve(code_bjs);
-    const interimJS = tokensToInterimJS(tokens);
-    const ast = parse(interimJS, { sourceType: 'module', plugins: ['jsx', 'classProperties'] });
-    const gen = generate(ast);
-    return { success: true, output: gen.code };
-  } catch (err: any) {
-    return { success: false, output: '', error: err.message };
-  }
-}
-
-function executeTranspiled(jsCode: string): { success: boolean, output: string, error?: string } {
-  try {
-    const outputs: string[] = [];
-    const customConsole = {
-      log: (...args: any[]) => outputs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')),
-      error: (...args: any[]) => outputs.push(`Error: ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')}`),
-      info: (...args: any[]) => outputs.push(`Info: ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')}`),
-      warn: (...args: any[]) => outputs.push(`Warn: ${args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ')}`),
-    };
-    const func = new Function('console', jsCode);
-    func(customConsole);
-    return { success: true, output: outputs.join('\n') };
-  } catch (err: any) {
-    return { success: false, output: '', error: err.message };
-  }
-}
-
-const defaultBanglaCode = `// BanglaScript উদাহরণ
-অনুষ্ঠান শুভেচ্ছা(নাম) {
-    প্রেরণ "হ্যালো, " + নাম + "! BanglaScript এ স্বাগতম।";
-}
-
-সংখ্যা ব্যবহারকারী = "বিশ্ব";
-সংখ্যা বার্তা = শুভেচ্ছা(ব্যবহারকারী);
-
-লিখো(বার্তা);
-
-// লুপের উদাহরণ
-জন্য (সংখ্যা i = ১; i <= ৫; i++) {
-    লিখো("সংখ্যা: " + i);
+পরিচয়(নাম);`
+  },
+  {
+    title: "Conditionals",
+    code: `সংখ্যা নম্বর = ৮৫;
+যদি (নম্বর >= ৮০) {
+    লিখো("গ্রেড: A+ 🎉");
+} নাহলে যদি (নম্বর >= ৬০) {
+    লিখো("গ্রেড: B ✓");
+} নাহলে {
+    লিখো("আরো চেষ্টা করুন! 💪");
 }`
+  },
+  {
+    title: "Loops",
+    code: `লিখো("🔢 সংখ্যা গণনা:");
+জন্য (সংখ্যা i = ১; i <= ৫; i++) {
+    লিখো("→ সংখ্যা: " + i);
+}
+লিখো("\\n✨ সম্পন্ন!");`
+  },
+  {
+    title: "Arrays",
+    code: `শব্দ ফল = ["আম", "কলা", "আপেল", "কমলা"];
+লিখো("🍎 ফলের তালিকা:");
+জন্য (সংখ্যা i = ০; i < ফল.length; i++) {
+    লিখো((i + ১) + ". " + ফল[i]);
+}`
+  },
+  {
+    title: "Advanced Example",
+    code: `অনুষ্ঠান ফ্যাক্টরিয়াল(n) {
+    যদি (n <= ১) {
+        প্রেরণ ১;
+    }
+    প্রেরণ n * ফ্যাক্টরিয়াল(n - ১);
+}
+সংখ্যা সংখ্যা = ৫;
+সংখ্যা ফলাফল = ফ্যাক্টরিয়াল(সংখ্যা);
+লিখো(সংখ্যা + " এর ফ্যাক্টরিয়াল = " + ফলাফল);`
+  }
+];
+
+const defaultCode = examples[1].code;
+
+function CodeEditor({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const [lineCount, setLineCount] = useState(1);
+  useEffect(() => {
+    const lines = value.split('\n').length;
+    setLineCount(lines);
+  }, [value]);
+  return (
+    <div className="relative flex h-full bg-black border border-gray-800 rounded-lg overflow-hidden">
+      <div className="flex-shrink-0 bg-gray-950 text-gray-600 text-right pr-3 pl-2 py-3 select-none border-r border-gray-800 font-mono text-sm leading-6">
+        {Array.from({ length: Math.max(lineCount, 10) }, (_, i) => (
+          <div key={i} className="h-6">{i + 1}</div>
+        ))}
+      </div>
+      <textarea
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="flex-1 bg-black text-gray-100 p-3 font-mono text-sm leading-6 resize-none focus:outline-none"
+        spellCheck={false}
+        style={{ tabSize: 2 }}
+      />
+    </div>
+  );
+}
 
 export default function PlaygroundPage() {
-  const [banglaCode, setBanglaCode] = useState(defaultBanglaCode)
-  const [jsCode, setJsCode] = useState("")
-  const [output, setOutput] = useState("")
-  const [error, setError] = useState("")
-  const [copied, setCopied] = useState(false)
-  const [isProcessing, setIsProcessing] = useState(false)
+  const [banglaCode, setBanglaCode] = useState(defaultCode);
+  const [jsCode, setJsCode] = useState("");
+  const [output, setOutput] = useState("");
+  const [error, setError] = useState("");
+  const [copied, setCopied] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [activeTab, setActiveTab] = useState("javascript");
+  const [executionTime, setExecutionTime] = useState<number | null>(null);
 
   const handleTranspile = () => {
-    setIsProcessing(true)
-    const result = transpile(banglaCode)
+    setIsProcessing(true);
+    const startTime = performance.now();
+   
+    const result = transpile(banglaCode);
+    const endTime = performance.now();
+   
     if (result.success) {
-      setJsCode(result.output)
-      setError("")
+      setJsCode(result.output);
+      setError("");
+      setExecutionTime(endTime - startTime);
     } else {
-      setError(result.error || "Transpilation failed")
-      setJsCode("")
+      setError(result.error || "Transpilation failed");
+      setJsCode("");
     }
-    setOutput("")
-    setIsProcessing(false)
-  }
+    setOutput("");
+    setIsProcessing(false);
+    setActiveTab("javascript");
+  };
 
   const handleRun = () => {
-    setIsProcessing(true)
-    const transpileResult = transpile(banglaCode)
-
+    setIsProcessing(true);
+    const startTime = performance.now();
+   
+    const transpileResult = transpile(banglaCode);
     if (!transpileResult.success) {
-      setError(transpileResult.error || "Transpilation failed")
-      setIsProcessing(false)
-      return
+      setError(transpileResult.error || "Transpilation failed");
+      setIsProcessing(false);
+      setActiveTab("console");
+      return;
     }
-
-    setJsCode(transpileResult.output)
-
-    const executeResult = executeTranspiled(transpileResult.output)
-
+    setJsCode(transpileResult.output);
+    const executeResult = executeCode(transpileResult.output);
+    const endTime = performance.now();
     if (executeResult.success) {
-      setOutput(executeResult.output)
-      setError("")
+      setOutput(executeResult.output);
+      setError("");
+      setExecutionTime(endTime - startTime);
     } else {
-      setError(executeResult.error || "Execution failed")
-      setOutput("")
+      setError(executeResult.error || "Execution failed");
+      setOutput("");
     }
-    setIsProcessing(false)
-  }
+   
+    setIsProcessing(false);
+    setActiveTab("console");
+  };
 
   const handleReset = () => {
-    setBanglaCode(defaultBanglaCode)
-    setJsCode("")
-    setOutput("")
-    setError("")
-  }
+    setBanglaCode(defaultCode);
+    setJsCode("");
+    setOutput("");
+    setError("");
+    setExecutionTime(null);
+  };
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(jsCode)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    await navigator.clipboard.writeText(jsCode);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleDownload = () => {
-    const blob = new Blob([jsCode], { type: "text/javascript" })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement("a")
-    a.href = url
-    a.download = "output.js"
-    a.click()
-    URL.revokeObjectURL(url)
-  }
-
-  const examples = [
-    {
-      title: "Variables & Functions",
-      code: `সংখ্যা নাম = "আহমেদ";
-ধ্রুবক বয়স = ২৫;
-
-অনুষ্ঠান পরিচয়() {
-    লিখো("আমার নাম " + নাম);
-    লিখো("আমার বয়স " + বয়স);
-}
-
-পরিচয়();`
-    },
-    {
-      title: "Conditionals",
-      code: `সংখ্যা স্কোর = ৮৫;
-
-যদি (স্কোর >= ৮০) {
-    লিখো("চমৎকার!");
-} নাহলে যদি (স্কোর >= ৬০) {
-    লিখো("ভাল!");
-} নাহলে {
-    লিখো("আরো চেষ্টা করুন।");
-}`
-    },
-    {
-      title: "Arrays & Loops",
-      code: `শব্দ ফল = ["আম", "কলা", "আপেল"];
-
-জন্য (সংখ্যা i = ০; i < ফল.length; i++) {
-    লিখো("ফল: " + ফল[i]);
-}
-
-// forEach লুপ
-ফল.forEach(অনুষ্ঠান(ফল) {
-    লিখো("আমি " + ফল + " পছন্দ করি");
-});`
-    }
-  ]
+    const blob = new Blob([jsCode], { type: "text/javascript" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "output.js";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-
-      <main className="flex-1 border-b border-border">
-        <div className="container px-4 py-8 mx-auto w-full max-w-7xl">
-          <div className="mb-8 text-center">       
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div
-                className="
-                  grid 
-                  grid-cols-1 
-                  md:grid-cols-3
-                  items-center 
-                  gap-2
-                  text-center 
-                  md:text-left
-                "
-              >
-
-                <div className="hidden md:block" />
-                <div className="flex flex-col items-center text-center md:items-start">
-                  <h1 className="text-4xl font-bold">Interactive Playground</h1>
-                  <p className="text-lg text-muted-foreground leading-relaxed px-4 py-2 max-w-2xl">
-                    Write BanglaScript code and see it transpile to JavaScript in real-time. Run your code to see the output.
-                  </p>
-                </div>
-
-                <div className="flex justify-center md:justify-end mt-4 md:mt-0 pr-4">
-                  <OpenInChatGPT pageUrl="https://bangla-script.vercel.app/playground" />
-                </div>
+    <div className="min-h-screen bg-white text-black">
+      < Header />
+      {/* Header */}
+      <header className="border-b border-gray-200">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div>
+                <h1 className="text-2xl font-bold">BanglaScript Playground</h1>
+                <p className="text-sm text-gray-600">Write and execute BanglaScript in real-time <span className="underline decoration-pink-500">Under development</span></p>
               </div>
-            </motion.div>
-
-          </div>
-
-          {/* Example Buttons */}
-          <div className="mb-6">
-            <div className="flex flex-wrap gap-2 justify-center">
-              {examples.map((example, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setBanglaCode(example.code)}
-                  className="text-xs"
-                >
-                  <Lightbulb className="h-3 w-3 mr-1" />
-                  {example.title}
-                </Button>
-              ))}
             </div>
+            <OpenInAI pageUrl={typeof window !== 'undefined' ? window.location.href : ''} />
           </div>
-
-          <div className="mb-4 flex flex-wrap gap-3">
-            <Button onClick={handleRun} disabled={isProcessing} className="glow-accent cursor-disable" title="Under Development">
-              <Play className="mr-2 h-4 w-4" />
-              {isProcessing ? 'Processing...' : 'Run Code'}
-            </Button>
-            <Button onClick={handleTranspile} disabled={isProcessing} variant="outline">
-              Transpile Only
-            </Button>
-            <Button onClick={handleReset} variant="outline">
-              <RotateCcw className="mr-2 h-4 w-4" />
-              Reset
-            </Button>
-            {jsCode && (
-              <>
-                <Button onClick={handleCopy} variant="outline">
-                  {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
-                  {copied ? "Copied!" : "Copy JS"}
-                </Button>
-                <Button onClick={handleDownload} variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
-                  Download JS
-                </Button>
-              </>
-            )}
+        </div>
+      </header>
+      <div className="container mx-auto px-4 py-6">
+        {/* Examples Bar */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Lightbulb className="h-4 w-4" />
+            <span className="text-sm font-medium">Quick Examples:</span>
           </div>
-
-          <div className="grid gap-6 lg:grid-cols-2">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <div className="mb-3 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                  <span className="font-mono text-sm font-bold text-primary-foreground">বা</span>
-                </div>
-                <h2 className="text-lg font-semibold">BanglaScript Input</h2>
-              </div>
-              <Textarea
-                value={banglaCode}
-                onChange={(e) => setBanglaCode(e.target.value)}
-                className="font-mono text-sm min-h-[500px] resize-none"
-                placeholder="Write your BanglaScript code here..."
-              />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              <Tabs defaultValue="javascript" className="h-full">
-                <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-lg font-semibold">Output</h2>
-                  <TabsList>
-                    <TabsTrigger value="javascript">JavaScript</TabsTrigger>
-                    <TabsTrigger value="console">Console</TabsTrigger>
-                  </TabsList>
-                </div>
-
-                <TabsContent value="javascript" className="mt-0">
-                  <div className="bg-muted rounded-md p-4 min-h-[500px]">
-                    {jsCode ? (
-                      <pre className="font-mono text-sm overflow-auto">
-                        <code>{jsCode}</code>
-                      </pre>
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-muted-foreground">
-                        Transpiled JavaScript will appear here...
-                      </div>
-                    )}
-                  </div>
-                </TabsContent>
-
-                <TabsContent value="console" className="mt-0">
-                  <div className="bg-black text-green-400 rounded-md p-4 min-h-[500px] font-mono text-sm overflow-auto">
-                    {error ? (
-                      <pre className="text-red-400">Error: {error}</pre>
-                    ) : output ? (
-                      <pre>{output}</pre>
-                    ) : (
-                      <div className="text-gray-500 flex h-full items-center justify-center">Run your code to see the output here...</div>
-                    )}
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </motion.div>
+          <div className="flex flex-wrap gap-2">
+            {examples.map((example, index) => (
+              <button
+                key={index}
+                onClick={() => setBanglaCode(example.code)}
+                className="px-3 py-1.5 text-sm border border-gray-300 rounded-md hover:bg-gray-100 transition-colors"
+              >
+                {example.title}
+              </button>
+            ))}
           </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8"
+        </motion.div>
+        {/* Action Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-6 flex flex-wrap gap-3 items-center"
+        >
+          <Button
+            onClick={handleRun}
+            disabled={isProcessing}
+            className="bg-black text-white hover:bg-gray-800"
           >
-            <Card className="border-primary/20 bg-primary/5">
-              <CardHeader>
-                <CardTitle>Quick Reference</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                  <div>
-                    <h4 className="font-semibold mb-2">Variables</h4>
-                    <code className="text-xs">বাক্য নাম = "মান"</code><br />
-                    <code className="text-xs">ধ্রুবক সংখ্যা = ১০</code>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Functions</h4>
-                    <code className="text-xs">অনুষ্ঠান নাম() {`{}`}</code><br />
-                    <code className="text-xs">প্রেরণ মান</code>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Conditionals</h4>
-                    <code className="text-xs">যদি (শর্ত) {`{}`}</code><br />
-                    <code className="text-xs">নাহলে {`{}`}</code>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Loops</h4>
-                    <code className="text-xs">{"জন্য (i = ০; i < ১০; i++) {}"}</code><br />
-                    <code className="text-xs">যখন (শর্ত) {`{}`}</code>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Numbers</h4>
-                    <code className="text-xs">০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯</code>
-                  </div>
-                  <div>
-                    <h4 className="font-semibold mb-2">Console</h4>
-                    <code className="text-xs">লিখো("বার্তা")</code>
-                  </div>
+            <Play className="mr-2 h-4 w-4" />
+            {isProcessing ? 'Processing...' : 'Run Code'}
+          </Button>
+          <Button
+            onClick={handleTranspile}
+            disabled={isProcessing}
+            variant="outline"
+            className="border-gray-300"
+          >
+            <Code2 className="mr-2 h-4 w-4" />
+            Transpile Only
+          </Button>
+          <Button onClick={handleReset} variant="outline" className="border-gray-300">
+            <RotateCcw className="mr-2 h-4 w-4" />
+            Reset
+          </Button>
+          {jsCode && (
+            <>
+              <Button onClick={handleCopy} variant="outline" className="border-gray-300">
+                {copied ? <Check className="mr-2 h-4 w-4" /> : <Copy className="mr-2 h-4 w-4" />}
+                {copied ? "Copied!" : "Copy JS"}
+              </Button>
+              <Button onClick={handleDownload} variant="outline" className="border-gray-300">
+                <Download className="mr-2 h-4 w-4" />
+                Download
+              </Button>
+            </>
+          )}
+          {executionTime !== null && (
+            <div className="ml-auto flex items-center gap-2 text-sm text-gray-600">
+              <span>{executionTime.toFixed(2)}ms</span>
+            </div>
+          )}
+        </motion.div>
+        {/* Editor Grid */}
+        <div className="grid lg:grid-cols-2 gap-6">
+          {/* Input Editor */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <div className="h-6 w-6 bg-black rounded flex items-center justify-center">
+                <span className="text-white text-xs font-bold">বা</span>
+              </div>
+              <h2 className="text-lg font-semibold">BanglaScript Code</h2>
+            </div>
+            <div className="h-[600px]">
+              <CodeEditor value={banglaCode} onChange={setBanglaCode} />
+            </div>
+          </motion.div>
+          {/* Output Panel */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Output</h2>
+                <TabsList className="bg-gray-100">
+                  <TabsTrigger value="javascript" className="data-[state=active]:bg-white">
+                    <Code2 className="h-4 w-4 mr-2" />
+                    JavaScript
+                  </TabsTrigger>
+                  <TabsTrigger value="console" className="data-[state=active]:bg-white">
+                    <Terminal className="h-4 w-4 mr-2" />
+                    Console
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              <TabsContent value="javascript" className="flex-1 mt-0">
+                <div className="h-[600px] bg-black border border-gray-800 rounded-lg p-4 overflow-auto">
+                  {jsCode ? (
+                    <pre className="text-gray-100 font-mono text-sm leading-6">
+                      <code>{jsCode}</code>
+                    </pre>
+                  ) : (
+                    <div className="h-full flex items-center justify-center text-gray-600">
+                      Transpiled JavaScript will appear here...
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-            </Card>
+              </TabsContent>
+              <TabsContent value="console" className="flex-1 mt-0">
+                <div className="h-[600px] bg-black border border-gray-800 rounded-lg p-4 font-mono text-sm overflow-auto">
+                  <AnimatePresence mode="wait">
+                    {error ? (
+                      <motion.pre
+                        key="error"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="text-red-400"
+                      >
+                        ❌ Error: {error}
+                      </motion.pre>
+                    ) : output ? (
+                      <motion.pre
+                        key="output"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="text-green-400 whitespace-pre-wrap"
+                      >
+                        {output}
+                      </motion.pre>
+                    ) : (
+                      <motion.div
+                        key="empty"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="h-full flex items-center justify-center text-gray-600"
+                      >
+                        Run your code to see output here...
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </TabsContent>
+            </Tabs>
           </motion.div>
         </div>
-      </main>
-
-      <Footer />
+        {/* Quick Reference */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8"
+        >
+          <Card className="border-gray-200">
+            <div className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Quick Reference Guide</h3>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+                <div>
+                  <h4 className="font-semibold mb-2 text-black">Variables</h4>
+                  <div className="space-y-1 text-gray-600">
+                    <div><code className="bg-gray-100 px-1 rounded">সংখ্যা x = ১০</code></div>
+                    <div><code className="bg-gray-100 px-1 rounded">বাক্য নাম = "মান"</code></div>
+                    <div><code className="bg-gray-100 px-1 rounded">ধ্রুবক PI = ৩.১৪</code></div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2 text-black">Functions</h4>
+                  <div className="space-y-1 text-gray-600">
+                    <div><code className="bg-gray-100 px-1 rounded">অনুষ্ঠান নাম() {'{}'}</code></div>
+                    <div><code className="bg-gray-100 px-1 rounded">প্রেরণ মান</code></div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2 text-black">Control Flow</h4>
+                  <div className="space-y-1 text-gray-600">
+                    <div><code className="bg-gray-100 px-1 rounded">যদি (শর্ত) {'{}'}</code></div>
+                    <div><code className="bg-gray-100 px-1 rounded">নাহলে {'{}'}</code></div>
+                    <div><code className="bg-gray-100 px-1 rounded">যখন (শর্ত) {'{}'}</code></div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-semibold mb-2 text-black">Console</h4>
+                  <div className="space-y-1 text-gray-600">
+                    <div><code className="bg-gray-100 px-1 rounded">লিখো("বার্তা")</code></div>
+                    <div><code className="bg-gray-100 px-1 rounded">সমস্যা_লিখো("error")</code></div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <h4 className="font-semibold mb-2 text-black">Bengali Numbers</h4>
+                <code className="text-gray-600 bg-gray-100 px-2 py-1 rounded">০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯</code>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+      {/* Footer */}
+      < Footer />
     </div>
-  )
+  );
 }
