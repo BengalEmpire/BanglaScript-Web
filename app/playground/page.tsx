@@ -289,7 +289,7 @@ export default function PlaygroundPage() {
     },
     {
       title: "Arrays & Loops",
-      code: `সংখ্যা ফল = ["আম", "কলা", "আপেল"];
+      code: `শব্দ ফল = ["আম", "কলা", "আপেল"];
 
 জন্য (সংখ্যা i = ০; i < ফল.length; i++) {
     লিখো("ফল: " + ফল[i]);
@@ -307,7 +307,7 @@ export default function PlaygroundPage() {
       <Header />
 
       <main className="flex-1 border-b border-border">
-        <div className="container px-4 py-8">
+        <div className="container px-4 py-8 mx-auto w-full max-w-7xl">
           <div className="mb-8 text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -340,7 +340,7 @@ export default function PlaygroundPage() {
           </div>
 
           <div className="mb-4 flex flex-wrap gap-3">
-            <Button onClick={handleRun} disabled={isProcessing} className="glow-accent">
+            <Button onClick={handleRun} disabled={isProcessing} className="glow-accent cursor-disable" title="Under Development">
               <Play className="mr-2 h-4 w-4" />
               {isProcessing ? 'Processing...' : 'Run Code'}
             </Button>
@@ -442,7 +442,7 @@ export default function PlaygroundPage() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                   <div>
                     <h4 className="font-semibold mb-2">Variables</h4>
-                    <code className="text-xs">সংখ্যা নাম = "মান"</code><br />
+                    <code className="text-xs">বাক্য নাম = "মান"</code><br />
                     <code className="text-xs">ধ্রুবক সংখ্যা = ১০</code>
                   </div>
                   <div>

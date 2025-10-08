@@ -4,7 +4,7 @@ import { Github, Twitter, Youtube } from "lucide-react"
 export function Footer() {
   return (
     <footer className="border-t border-border bg-card">
-      <div className="container px-4 py-12">
+      <div className="container px-4 py-12 mx-auto w-full max-w-7xl">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div className="space-y-4">
             <div className="flex items-center gap-2">
@@ -79,7 +79,7 @@ export function Footer() {
             <h3 className="mb-4 text-sm font-semibold">Connect</h3>
             <div className="flex gap-3">
               <a
-                href="https://github.com/banglascript"
+                href="https://github.com/BengalEmpire/BanglaScript"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -88,7 +88,7 @@ export function Footer() {
                 <span className="sr-only">GitHub</span>
               </a>
               <a
-                href="https://twitter.com/banglascript"
+                href=""
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -97,7 +97,7 @@ export function Footer() {
                 <span className="sr-only">Twitter</span>
               </a>
               <a
-                href="https://youtube.com/@banglascript"
+                href=""
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"

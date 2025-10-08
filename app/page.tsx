@@ -51,10 +51,11 @@ console.log("যোগফল: " + ফলাফল)`
   ]
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header />
 
-      <main className="flex-1">
+      <main className="flex-grow">
+        <div className="mx-auto w-full max-w-7xl">
         {/* Hero Section */}
         <section className="relative overflow-hidden border-b border-border">
           <div className="absolute inset-0 grid-pattern opacity-20" />
@@ -66,9 +67,9 @@ console.log("যোগফল: " + ফলাফল)`
               </div>
 
               <h1 className="mb-6 text-balance text-5xl font-bold tracking-tight md:text-7xl">
-                Write in Bangla,
+                Write in <span className="underline decoration-[#F0DB4F]">Bangla</span>,
                 <br />
-                <span className="text-primary">Run in JavaScript</span>
+                <span className="text-primary">Run in <span className="underline decoration-[#F0DB4F]">JavaScript</span></span>
               </h1>
 
               <p className="mb-8 text-balance text-lg text-muted-foreground md:text-xl leading-relaxed">
@@ -264,6 +265,7 @@ console.log("যোগফল: " + ফলাফল)`
             </div>
           </div>
         </section>
+        </div>
       </main>
 
       <Footer />
