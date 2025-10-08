@@ -330,7 +330,7 @@ export default function PlaygroundPage() {
                 <div className="hidden md:block" />
                 <div className="flex flex-col items-center text-center md:items-start">
                   <h1 className="text-4xl font-bold">Interactive Playground</h1>
-                  <p className="text-lg text-muted-foreground leading-relaxed p-2 max-w-2xl">
+                  <p className="text-lg text-muted-foreground leading-relaxed px-4 py-2 max-w-2xl">
                     Write BanglaScript code and see it transpile to JavaScript in real-time. Run your code to see the output.
                   </p>
                 </div>
