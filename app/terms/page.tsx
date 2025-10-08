@@ -46,7 +46,7 @@ export default function TermsPage() {
             Last updated: October 08, 2025
           </motion.p>
 
-          <motion.section variants={sectionVariants} className="mb-12 p-6 bg-gray-50 border border-gray-200 rounded-lg">
+          <motion.section variants={sectionVariants} className="mb-12 p-6 bg-gray-50 scroll-smooth rounded-lg border-2 border-red-500">
             <h2 className="text-2xl font-semibold mb-4 text-gray-800">Development Notice / উন্নয়ন সংক্রান্ত নোটিশ</h2>
             <p className="text-lg leading-relaxed italic text-gray-700">
               BanglaScript পরিকল্পনাধীন ভাবে ডেভেলপমেন্টের মধ্য রয়েছে। তাই ওয়েব playground এবং npm package এর মধ্য কিছু পার্থক্য আপাতত থাকতে পারে। তবে এটি খুব দ্রুত সমাধান হয়ে, সহজে ব্যবহার যোগ্য বাংলা ভাষায় প্রোগ্রামিং করা যাবে। সাথে থাকুন। ধন্যবাদ।

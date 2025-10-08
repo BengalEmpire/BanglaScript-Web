@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github, Twitter, Youtube } from "lucide-react"
+import { Github, Twitter, Youtube, Unplug } from "lucide-react"
 
 export function Footer() {
   return (
@@ -27,13 +27,13 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/docs/installation" className="text-muted-foreground hover:text-primary transition-colors">
+                <Link href="/installation" className="text-muted-foreground hover:text-primary transition-colors">
                   Installation
                 </Link>
               </li>
               <li>
-                <Link href="/docs/syntax" className="text-muted-foreground hover:text-primary transition-colors">
-                  Syntax Guide
+                <Link href="/computer-programming" className="text-muted-foreground hover:text-primary transition-colors">
+                  তথ্য
                 </Link>
               </li>
               <li>
@@ -88,13 +88,13 @@ export function Footer() {
                 <span className="sr-only">GitHub</span>
               </a>
               <a
-                href=""
+                href="https://www.npmjs.com/package/banglascript"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
               >
-                <Twitter className="h-4 w-4" />
-                <span className="sr-only">Twitter</span>
+                <Unplug className="h-4 w-4" />
+                <span className="sr-only">NPM</span>
               </a>
               <a
                 href=""

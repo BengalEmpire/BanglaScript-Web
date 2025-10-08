@@ -51,7 +51,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       suppressHydrationWarning
     >
-      <body className="font-sans">
+      <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {children}
         </ThemeProvider>
