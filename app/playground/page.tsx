@@ -14,7 +14,7 @@ import generate from "@babel/generator"
 
 const KEYWORDS: { [key: string]: string } = {
   'সংখ্যা': 'let',
-  'শব্দ': 'let'
+  'শব্দ': 'let',
   'বাক্য': 'let',
   'ধ্রুবক': 'const',
   'অনুষ্ঠান': 'function',
