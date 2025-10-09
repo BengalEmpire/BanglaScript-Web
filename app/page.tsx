@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { ArrowRight, Code2, Globe, GraduationCap, Sparkles, Github, BookOpen } from "lucide-react"
 import Link from "next/link"
 import { CodeBlock } from "@/components/code-block"
+import Image from 'next/image'
 
 export default function HomePage() {
   const banglaCode = `বাক্য নাম = "বিশ্ব"
@@ -17,15 +18,15 @@ export default function HomePage() {
 সংখ্যা ফলাফল = যোগ(৫, ৩)
 লিখো("যোগফল: " + ফলাফল)`
 
-  const jsCode = `let নাম = "বিশ্ব"
-console.log("হ্যালো, " + নাম + "!")
+  const jsCode = `let name = "বিশ্ব"
+console.log("হ্যালো, " + name + "!")
 
 function যোগ(ক, খ) {
   return ক + খ
 }
 
-let ফলাফল = যোগ(5, 3)
-console.log("যোগফল: " + ফলাফল)`
+let Results = যোগ(5, 3)
+console.log("যোগফল: " + Results)`
 
   const features = [
     {
@@ -67,7 +68,7 @@ console.log("যোগফল: " + ফলাফল)`
               </div>
 
               <h1 className="mb-6 text-balance text-5xl font-bold tracking-tight md:text-7xl">
-                Write in <span className="underline decoration-[#F0DB4F]">Bangla</span>,
+                Write in <span className="underline decoration-[#F0DB4F]">বাংলা</span>,
                 <br />
                 <span className="text-primary">Run in <span className="underline decoration-[#F0DB4F]">JavaScript</span></span>
               </h1>
@@ -115,8 +116,8 @@ console.log("যোগফল: " + ফলাফল)`
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
                   <div className="mb-3 flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                      <span className="font-mono text-sm font-bold text-primary-foreground">বা</span>
+                    <div className="flex h-8 w-8 items-center justify-center bg-[#F7DF1E]">
+                      <span className="font-mono text-sm font-bold text-[#000000]">ব</span>
                     </div>
                     <h3 className="font-semibold">BanglaScript</h3>
                   </div>
@@ -125,7 +126,12 @@ console.log("যোগফল: " + ফলাফল)`
 
                 <div>
                   <div className="mb-3 flex items-center gap-2">
-                    <Code2 className="h-8 w-8 text-primary" />
+                     <Image
+                      src="/assets/javascript-logo-svgrepo-com.svg"
+                      width={30}
+                      height={30}
+                      alt="Picture of the author"
+                    />
                     <h3 className="font-semibold">JavaScript Output</h3>
                   </div>
                   <CodeBlock code={jsCode} language="javascript" showLineNumbers />

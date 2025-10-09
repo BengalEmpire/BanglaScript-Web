@@ -153,6 +153,7 @@ export function simpleTransliterate(word: string): string {
   "শুভেচ্ছা": "shubhochcha",
   "যোগফল": "jogfol",
   "বাক্য": "bakyo",
+  "মান":"value",
   "i": "i",
   "j": "j",
   "k": "k",

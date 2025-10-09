@@ -6,6 +6,10 @@ interface ContentSection {
   code?: string
   language?: string
   list?: string[]
+  table?: {
+    headers: string[]
+    rows: string[][]
+  }
 }
 
 interface DocContent {
@@ -48,6 +52,39 @@ export function DocsContent({ content }: DocsContentProps) {
                   </li>
                 ))}
               </ul>
+            )}
+
+            {section.table && (
+              <div className="overflow-x-auto my-4">
+                <table className="min-w-full divide-y divide-border">
+                  <thead className="bg-muted/50">
+                    <tr>
+                      {section.table.headers.map((header, hIndex) => (
+                        <th
+                          key={hIndex}
+                          className="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider"
+                        >
+                          {header}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-card divide-y divide-border">
+                    {section.table.rows.map((row, rIndex) => (
+                      <tr key={rIndex}>
+                        {row.map((cell, cIndex) => (
+                          <td
+                            key={cIndex}
+                            className="px-6 py-4 whitespace-pre-wrap text-sm text-foreground"
+                          >
+                            {cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             )}
           </section>
         ))}

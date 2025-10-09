@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { transpile, executeCode } from "@/lib/transpiler";
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import  Syntax from "@/components/syntax";
 
 interface TranspileResult {
   success: boolean;
@@ -80,9 +79,9 @@ const examples: Example[] = [
     }
     প্রেরণ n * ফ্যাক্টরিয়াল(n - ১);
 }
-সংখ্যা সংখ্যা = ৫;
-সংখ্যা ফলাফল = ফ্যাক্টরিয়াল(সংখ্যা);
-লিখো(সংখ্যা + " এর ফ্যাক্টরিয়াল = " + ফলাফল);`
+সংখ্যা মান = ৫;
+সংখ্যা ফলাফল = ফ্যাক্টরিয়াল(মান);
+লিখো("ফ্যাক্টরিয়াল মান = " + ফলাফল);`
   }
 ];
 
@@ -434,7 +433,6 @@ export default function PlaygroundPage() {
           </motion.div>
         </div>
       </div>
-      <Syntax/>
       <Footer/>
     </div>
   );
