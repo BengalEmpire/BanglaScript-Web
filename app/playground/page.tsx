@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { transpile, executeCode } from "@/lib/transpiler";
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import Image from 'next/image'
 
 interface TranspileResult {
   success: boolean;
@@ -355,7 +356,12 @@ export default function PlaygroundPage() {
                     value="javascript"
                     className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4"
                   >
-                    <Code2 className="h-4 w-4 mr-2" />
+                    <Image
+                      src="/assets/javascript-svgrepo-com.svg"
+                      width={20}
+                      height={20}
+                      alt="Js-Code-Logo"
+                      />
                     JavaScript
                   </TabsTrigger>
                   <TabsTrigger

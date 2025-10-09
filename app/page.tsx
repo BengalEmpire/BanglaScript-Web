@@ -75,7 +75,7 @@ console.log("যোগফল: " + Results)`
 
               <p className="mb-8 text-balance text-lg text-muted-foreground md:text-xl leading-relaxed">
                 BanglaScript is a language transpiler that enables developers to write programs in Bengali syntax, which
-                then compiles to pure JavaScript. Making programming accessible for Bengali speakers.
+                then compiles to pure JavaScript. <span className="underline decoration-wavy hover:decoration-solid hover:underline-offset-2 hover:uppercase decoration-pink-500">লিখো বাংলায়, চালাও জাভাস্ক্রিপ্ট!</span>
               </p>
 
               <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -130,7 +130,7 @@ console.log("যোগফল: " + Results)`
                       src="/assets/javascript-logo-svgrepo-com.svg"
                       width={30}
                       height={30}
-                      alt="Picture of the author"
+                      alt="Js-Logo"
                     />
                     <h3 className="font-semibold">JavaScript Output</h3>
                   </div>
