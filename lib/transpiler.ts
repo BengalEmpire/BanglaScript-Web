@@ -149,6 +149,7 @@ export function simpleTransliterate(word: string): string {
   "সমাজ": "society",
   "পরিচয়": "porichoy",
   "নাম": "nam",
+  "পেশা":"occupation",
   "বয়স": "boyos",
   "লিঙ্গ": "gender",
   "মান": "value",
