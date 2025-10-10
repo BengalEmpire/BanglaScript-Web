@@ -103,7 +103,7 @@ console.log("যোগফল: " + Results)`
         </section>
 
         {/* Code Demo Section */}
-        <section className="border-b border-border bg-muted/30 py-16 md:py-24">
+        <section className="border-b border-border bg-muted/20 py-16 md:py-24">
           <div className="container px-4">
             <div className="mx-auto max-w-6xl">
               <div className="mb-12 text-center">
@@ -177,7 +177,7 @@ console.log("যোগফল: " + Results)`
         </section>
 
         {/* Features Section */}
-        <section className="border-t border-border bg-muted/30 py-16 md:py-24">
+        <section className="border-b border-border bg-muted/20 py-16 md:py-24">
           <div className="container px-4">
             <div className="mx-auto max-w-6xl">
               <div className="grid gap-12 md:grid-cols-2">
@@ -193,21 +193,30 @@ console.log("যোগফল: " + Results)`
                   </p>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-3">
-                      <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
-                        <div className="h-2 w-2 rounded-full bg-primary" />
-                      </div>
+                       <Image
+                      src="/assets/pulse.svg"
+                      width={25}
+                      height={25}
+                      alt="https://github.com/mahmud-r-farhan/Realtime-Location-Tracker/blob/master/public/assets/unknown-log.svg"
+                    />
                       <span className="text-muted-foreground">Bengali keywords like সংখ্যা, অনুষ্ঠান, প্রেরণ</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
-                        <div className="h-2 w-2 rounded-full bg-primary" />
-                      </div>
+                        <Image
+                      src="/assets/pulse.svg"
+                      width={25}
+                      height={25}
+                      alt="https://github.com/mahmud-r-farhan/Realtime-Location-Tracker/blob/master/public/assets/unknown-log.svg"
+                    />
                       <span className="text-muted-foreground">Compiles to clean, readable JavaScript</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
-                        <div className="h-2 w-2 rounded-full bg-primary" />
-                      </div>
+                        <Image
+                      src="/assets/pulse.svg"
+                      width={25}
+                      height={25}
+                      alt="https://github.com/mahmud-r-farhan/Realtime-Location-Tracker/blob/master/public/assets/unknown-log.svg"
+                    />
                       <span className="text-muted-foreground">Works with existing JavaScript libraries</span>
                     </li>
                   </ul>
@@ -225,21 +234,30 @@ console.log("যোগফল: " + Results)`
                   </p>
                   <ul className="space-y-3">
                     <li className="flex items-start gap-3">
-                      <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
-                        <div className="h-2 w-2 rounded-full bg-primary" />
-                      </div>
+                       <Image
+                      src="/assets/pulse.svg"
+                      width={25}
+                      height={25}
+                      alt="https://github.com/mahmud-r-farhan/Realtime-Location-Tracker/blob/master/public/assets/unknown-log.svg"
+                    />
                       <span className="text-muted-foreground">CLI tool for quick transpilation</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
-                        <div className="h-2 w-2 rounded-full bg-primary" />
-                      </div>
+                        <Image
+                      src="/assets/pulse.svg"
+                      width={25}
+                      height={25}
+                      alt="https://github.com/mahmud-r-farhan/Realtime-Location-Tracker/blob/master/public/assets/unknown-log.svg"
+                    />
                       <span className="text-muted-foreground">Node.js integration for server-side code</span>
                     </li>
                     <li className="flex items-start gap-3">
-                      <div className="mt-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary/10">
-                        <div className="h-2 w-2 rounded-full bg-primary" />
-                      </div>
+                        <Image
+                      src="/assets/pulse.svg"
+                      width={25}
+                      height={25}
+                      alt="https://github.com/mahmud-r-farhan/Realtime-Location-Tracker/blob/master/public/assets/unknown-log.svg"
+                    />
                       <span className="text-muted-foreground">Browser support for client-side applications</span>
                     </li>
                   </ul>
