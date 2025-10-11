@@ -6,6 +6,7 @@ export const KEYWORDS = {
   'চলক': 'let',
   'পরিবর্তনশীল': 'var',
   'ধ্রুবক': 'const',
+  'ব্যাক্তি':'const',
   'অনুষ্ঠান': 'function',
   'ফাংশন': 'function',
   'প্রেরণ': 'return',
@@ -49,7 +50,9 @@ export const KEYWORDS = {
   'হিসেবে': 'as',
   'মুছো': 'delete',
   'ইন': 'in',
+  'ভিতরে':'in',
   'অফ': 'of',
+  'মধ্য':"of",
   'এটি': 'this',
   'বিস্তৃত': 'extends',
   'স্ট্যাটিক': 'static',
@@ -173,6 +176,7 @@ export function simpleTransliterate(word: string): string {
   "ছাত্রছাত্রী": "chhatrochhatri",
   "শিক্ষক": "teacher",
   "শিক্ষার্থী": "student",
+  "শিক্ষার্থীরা": "students",
   "মানুষ": "manush",
   "গ্রাহক": "grahok",
   "কর্মী": "kormi",
@@ -209,10 +213,12 @@ export function simpleTransliterate(word: string): string {
 
 
   "গণিত": "math",
+  "নম্বর": "number",
+  "নাম্বার":"number",
   "বিজ্ঞান": "science",
   "ফ্যাক্টরিয়াল": "factorial",
   "গড়": "average",
-  "সংখ্যা": "number",
+  "গ্রেড":"grade",
   "গণনা": "count",
   "গুন": "multiply",
   "ভাগ": "divide",
@@ -426,7 +432,27 @@ export function simpleTransliterate(word: string): string {
   "success": "shafollo",
   "warning": "shotorkota"
   };
-  return map[word] || word.replace(/[হ-া]/g, 'x');
+
+
+  if (word.includes("_")) {
+    const parts = word.split("_");
+    const transliteratedParts = parts.map(part => map[part] || simpleTransliterate(part));
+    return transliteratedParts.join("_");
+  }
+
+  if (map[word]) return map[word];
+  return word
+    .replace(/[অ]/g, "o")
+    .replace(/[আ]/g, "a")
+    .replace(/[ই]/g, "i")
+    .replace(/[ঈ]/g, "ee")
+    .replace(/[উ]/g, "u")
+    .replace(/[ঊ]/g, "oo")
+    .replace(/[এ]/g, "e")
+    .replace(/[ঐ]/g, "oi")
+    .replace(/[ও]/g, "o")
+    .replace(/[ঔ]/g, "ou")
+    .replace(/[ক-হ]/g, "x");
 }
 
 export function tokensToJS(tokens: { type: string; text: string }[]): string {
