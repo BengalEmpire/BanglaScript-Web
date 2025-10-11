@@ -110,7 +110,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 border-t border-border pt-8 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} BanglaScript. Open source under MIT License.</p>
+          <p>© {new Date().getFullYear()} BanglaScript.</p>
         </div>
       </div>
     </footer>

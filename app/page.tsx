@@ -21,11 +21,11 @@ export default function HomePage() {
   const jsCode = `let name = "বিশ্ব"
 console.log("হ্যালো, " + name + "!")
 
-function যোগ(ক, খ) {
+function addition(ক, খ) {
   return ক + খ
 }
 
-let Results = যোগ(5, 3)
+let Results = addition(5, 3)
 console.log("যোগফল: " + Results)`
 
   const features = [
