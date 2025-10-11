@@ -34,51 +34,6 @@ const syntaxTable: React.FC = () => {
           বাংলা থেকে ইংরেজি ম্যাপিং এবং কীওয়ার্ডস
         </motion.h1>
 
-        {/* Common Map Section */}
-        <motion.section
-          className="mb-12"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={containerVariants}
-        >
-          <motion.h2
-            className="text-2xl font-semibold text-center text-blue-700 mb-6"
-            variants={itemVariants}
-          >
-            আপাতত এগুলো variable এবং function নাম এর ক্ষেত্রে ব্যবহার করতে হবে। (বাংলায়)
-          </motion.h2>
-          <div className="overflow-x-auto">
-            <motion.table
-              className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg"
-              variants={containerVariants}
-            >
-              <thead>
-                <tr className="bg-blue-100">
-                  <th className="p-4 text-left font-semibold text-gray-800">বাংলা শব্দ</th>
-                  <th className="p-4 text-left font-semibold text-gray-800">ইংরেজি সমতুল্য</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(commonMap).map(([bengaliKey, englishValue], index) => (
-                  <motion.tr
-                    key={`${bengaliKey}-${index}`}
-                    className="border-t hover:bg-blue-50 transition-colors duration-200"
-                    variants={itemVariants}
-                    whileHover={{ backgroundColor: '#eff6ff' }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <td className="p-4 text-lg font-medium text-gray-800 border-r border-gray-200">
-                      {bengaliKey}
-                    </td>
-                    <td className="p-4 text-sm text-gray-600 italic">{englishValue}</td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </motion.table>
-          </div>
-        </motion.section>
-
         {/* Keywords Section */}
         <motion.section
           initial="hidden"
@@ -126,6 +81,53 @@ const syntaxTable: React.FC = () => {
             </motion.table>
           </div>
         </motion.section>
+
+        {/* Common Map Section */}
+        <motion.section
+          className="mb-12"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={containerVariants}
+        >
+          <motion.h2
+            className="text-2xl font-semibold text-center text-blue-700 mb-6"
+            variants={itemVariants}
+          >
+            আপাতত এগুলো variable এবং function নাম এর ক্ষেত্রে ব্যবহার করতে হবে। (বাংলায়)
+          </motion.h2>
+          <div className="overflow-x-auto">
+            <motion.table
+              className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg"
+              variants={containerVariants}
+            >
+              <thead>
+                <tr className="bg-blue-100">
+                  <th className="p-4 text-left font-semibold text-gray-800">বাংলা শব্দ</th>
+                  <th className="p-4 text-left font-semibold text-gray-800">ইংরেজি সমতুল্য</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(commonMap).map(([bengaliKey, englishValue], index) => (
+                  <motion.tr
+                    key={`${bengaliKey}-${index}`}
+                    className="border-t hover:bg-blue-50 transition-colors duration-200"
+                    variants={itemVariants}
+                    whileHover={{ backgroundColor: '#eff6ff' }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    <td className="p-4 text-lg font-medium text-gray-800 border-r border-gray-200">
+                      {bengaliKey}
+                    </td>
+                    <td className="p-4 text-sm text-gray-600 italic">{englishValue}</td>
+                  </motion.tr>
+                ))}
+              </tbody>
+            </motion.table>
+          </div>
+        </motion.section>
+
+
       </div>
       <motion.h2
         className="text-2xl font-semibold text-center text-black mb-6 mt-6 underline decoration-pink-500"
