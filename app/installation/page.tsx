@@ -61,7 +61,7 @@ const setupSteps = [
       {
         title: "১. ডাউনলোড করুন",
         content: "nodejs.org ওয়েবসাইট থেকে LTS (Long Term Support) ভার্সন ডাউনলোড করুন। এটি 'Recommended For Most Users' লেবেল সহ থাকবে।",
-        tip: "টিপস: সবুজ রঙের বড় বাটনে ক্লিক করুন যেখানে লেখা আছে 'Download for Windows/Mac'।"
+        tip: "টিপস: সবুজ রঙের বড় বাটনে ক্লিক করুন যেখানে লেখা আছে 'Download for Windows/Mac'। (BanglaScript Deno'র উপরেও চলতে পারে।)"
       },
       {
         title: "২. ইনস্টল করুন",

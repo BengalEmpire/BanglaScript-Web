@@ -1,7 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import commonMap from '@/data/common-map.json';
-import keywords from '@/data/keywords.json';
+import commonMap from '@/public/json/common-map.json';
+import keywords from '@/public/json/keywords.json';
+
+type CommonMap = { [key: string]: any };
+type Keywords = string[];
+
+const data: CommonMap = commonMap;
+const keywordList: Keywords = keywords;
 
 const syntaxTable: React.FC = () => {
   // Stagger animation variants for lists

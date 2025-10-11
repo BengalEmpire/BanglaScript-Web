@@ -11,12 +11,12 @@ const BlogPage = () => {
     <div className=" text-gray-800">
         <Header/>
       {/* Header Section */}
-      <header className="mb-12 text-center mt-50 h-[30vh]">
+      <header className="mb-12 text-center justify-center mt-50 h-[30vh]">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="text-5xl font-extrabold text-gray-900 tracking-wide"
+          className="text-5xl font-extrabold text-gray-900 dark:text-gray-200 tracking-wide"
         >
           Blog Under <span className="underline decoration-sky-500">Development</span>
         </motion.h1>
@@ -24,7 +24,7 @@ const BlogPage = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
-          className="mt-4 text-lg font-light text-gray-600 max-w-2xl mx-auto"
+          className="mt-4 text-lg font-light text-gray-600 dark:text-gray-200 max-w-2xl mx-auto"
         >
           We're currently working on creating amazing content for you. Stay tuned for some exciting blog posts!
         </motion.p>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import commonMap from '@/data/common-map.json';
-import keywords from '@/data/keywords.json';
+import commonMap from '@/public/json/common-map.json';
+import keywords from '@/public/json/keywords.json';
 
 const Syntax: React.FC = () => {
   // Stagger animation variants for lists
