@@ -17,9 +17,9 @@
       "type": "image/png"
     },
     {
-      "src": "BanglaScript-Logo.png",
+      "src": "/bjs.jpg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/jpg"
     }
   ],
   "categories": ["developer-tools", "education", "programming"],

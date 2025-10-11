@@ -51,6 +51,9 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       suppressHydrationWarning
     >
+      <head>
+         <link rel="icon" href="/bjs.jpg" />
+      </head>
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {children}
