@@ -38,14 +38,14 @@ export default function PlaygroundPage() {
     setActiveTab("javascript");
   };
 
-  const handleRun = (code: string, onSuccess: (out: string, js: string) => void, onError: (err: string) => void) => {
+  const handleRun = async (code: string, onSuccess: (out: string, js: string) => void, onError: (err: string) => void) => {
     setIsProcessing(true);
     const startTime = performance.now();
     const transpileResult = transpile(code);
     if (transpileResult.success) {
       const jsOutput = transpileResult.output || "";
       setJsCode(jsOutput);
-      const executeResult = executeCode(jsOutput);
+      const executeResult = await executeCode(jsOutput);
       const endTime = performance.now();
       if (executeResult.success) {
         onSuccess(executeResult.output || "", jsOutput);

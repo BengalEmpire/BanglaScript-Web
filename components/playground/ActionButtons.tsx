@@ -71,8 +71,6 @@ export function ActionButtons({
           <RotateCcw className="mr-2 h-4 w-4" />
           রিসেট
         </Button>
-
-        {/* Secondary buttons appear with animation only when there's JS code */}
         <AnimatePresence>
           {jsCode && (
             <motion.div

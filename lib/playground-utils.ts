@@ -1,4 +1,5 @@
-import { tokenizePreserve, KEYWORDS } from "@/lib/transpiler"; 
+import { tokenizePreserve } from "@/lib/transpiler"; 
+import { KEYWORDS } from '@/data/keywords'
 
 export function escapeHtml(unsafe: string): string {
   return unsafe
