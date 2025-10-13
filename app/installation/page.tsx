@@ -6,6 +6,7 @@ import Link from 'next/link';
 import React from 'react';
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import OpenInAI from "@/components/OpenInChatGPT";
 
 // --- Enhanced Animation Variants ---
 const pageVariants: Variants = {
@@ -482,6 +483,17 @@ export default function BanglaScriptSetupPage() {
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               বাংলায় প্রোগ্রামিং শুরু করার জন্য আপনার যা যা প্রয়োজন, তার সবকিছু ধাপে ধাপে এখানে সাজানো আছে। চলুন শুরু করা যাক!
             </p>
+            <motion.div
+              className="flex justify-center items-center p-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8 }}
+            >
+              <OpenInAI
+                pageUrl={typeof window !== "undefined" ? window.location.href : ""}
+                customPrompt="Explain what this web page is doing in detail:"
+              />
+            </motion.div>
           </motion.div>
 
           {/* --- Steps Grid --- */}

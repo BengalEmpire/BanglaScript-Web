@@ -10,6 +10,7 @@ import BanglaCodeEditor from "@/components/playground/BanglaCodeEditor";
 import { transpile, executeCode } from "@/lib/transpiler";
 import { OutputPanel } from "@/components/playground/OutputPanel";
 import { examples } from "@/lib/playground-example-bjs";
+import DownloadButton from '@/components/DownloadButton';
 
 export default function PlaygroundPage() {
   const [banglaCode, setBanglaCode] = useState<string>(examples[1].code);
@@ -118,10 +119,9 @@ export default function PlaygroundPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="px-3 py-1 bg-yellow-900/90 text-yellow-300 text-xs font-medium rounded-full border border-yellow-600/80 shadow">
-                ⚠️ ডেভেলপমেন্ট মোড
-              </span>
+            <div className="text-center items-center gap-2">
+              <DownloadButton />
+              <p className="text-sm text-gray-600 dark:text-green-400 italic">require windows 10/11</p>
             </div>
           </div>
         </div>
