@@ -91,7 +91,7 @@ export function OutputPanel({
             >
               <Code2 className="w-4 h-4" />
               <span>main.js</span>
-              <span className="ml-1 text-[10px] text-gray-600 data-[state=active]:text-[#00A63E]">JS</span>
+              <span className="ml-1 text-[10px] text-[#F7DF1E] data-[state=active]:text-[#F7DF1E]">JS</span>
             </TabsTrigger>
             <TabsTrigger
               value="console"

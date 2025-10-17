@@ -30,8 +30,13 @@ export function ActionButtons({
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="mb-6 flex flex-wrap items-center justify-between gap-4 bg-gradient-to-r from-gray-800 to-gray-900 p-3 sm:p-4 rounded-xl border border-gray-700/50 shadow-lg backdrop-blur-sm"
+      className="mb-6 flex flex-wrap items-center justify-between gap-4 
+                bg-gradient-to-r from-gray-900 to-green-900 
+                dark:bg-gradient-to-r dark:from-gray-800 dark:to-gray-900 
+                p-3 sm:p-4 rounded-xl border border-gray-700/50 
+                shadow-lg backdrop-blur-sm"
     >
+
       {/* Left Group: Contains all action buttons */}
       <div className="flex flex-wrap items-center gap-3 p-2">
         <Button

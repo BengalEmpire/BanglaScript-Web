@@ -467,7 +467,7 @@ export default function BanglaCodeEditor({ value = '', onChange }: CodeEditorPro
         {/* Enhanced Line Numbers */}
         <div 
           ref={lineNumbersRef}
-          className="flex-shrink-0 bg-[#1e1e1e] text-right select-none border-r border-gray-800 overflow-y-auto min-w-[4rem]"
+          className="flex-shrink-0 pt-4 bg-[#1e1e1e] text-right select-none border-r border-gray-800 overflow-y-auto min-w-[4rem]"
           style={{ 
             scrollbarWidth: 'none',
             msOverflowStyle: 'none',
