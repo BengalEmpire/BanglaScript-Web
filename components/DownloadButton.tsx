@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/tooltip";
 
 const DownloadButton = () => {
-  const downloadUrl = 'https://github.com/BengalEmpire/banglascript-desktop/releases/download/v1.0.0/BanglaScript.Playground.exe';
+  const downloadUrl = 'https://github.com/BengalEmpire/banglascript-desktop/releases/download/v1.1.0/BanglaScript.Playground.exe';
 
   const handleDownload = () => {
     const link = document.createElement('a');
