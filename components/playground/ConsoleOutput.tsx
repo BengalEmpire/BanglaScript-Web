@@ -83,7 +83,7 @@ export function ConsoleOutput({ output, error, executionTime, runCode }: Console
           ></div>
         </div>
         <div className="flex-1 flex items-center justify-center gap-2  text-xs">
-          <Terminal className="h-3.5 w-3.5" />
+          <Terminal className="h-3.5 w-3.5 text-amber-100" />
           <span className="text-gray-500">BanglaScript Terminal</span>
         </div>
         <div className="flex items-center justify-end w-16 pr-4"
@@ -112,7 +112,11 @@ export function ConsoleOutput({ output, error, executionTime, runCode }: Console
         {terminalHistory.length === 0 && (
           <>
             <div className="text-gray-600 text-[13px]">BanglaScript Terminal v1.3.7</div>
-            <div className="text-gray-700 text-xs">Type commands like '<span className="text-gray-50/25">node main.js</span>' or '<span className="text-gray-50/25">deno run main.js</span>' to run the code | run `<span className="text-gray-50/25">clear</span>` to clean the terminal</div>
+              <div className="text-gray-700 text-xs">Type commands like '
+                <span className="text-gray-50/25">node main.js</span>' or '
+                <span className="text-gray-50/25">deno run main.js</span>' to run the code | run `
+                <span className="text-gray-50/25">clear</span>` to clean the terminal
+              </div>
             <div className="w-full border-t border-gray-800/50 my-2"></div>
           </>
         )}
