@@ -346,7 +346,6 @@ export default function BanglaCodeEditor({ value = '', onChange }: CodeEditorPro
         isFullscreen ? 'fixed inset-4 z-50' : 'h-full'
       }`}
     >
-      {/* Enhanced Top Bar */}
       <div className="flex-shrink-0 bg-gradient-to-r from-[#2d2d30] to-[#252526] border-b border-gray-800 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">

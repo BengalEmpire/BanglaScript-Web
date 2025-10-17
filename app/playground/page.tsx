@@ -96,6 +96,10 @@ export default function PlaygroundPage() {
     setExecutionTime(null);
   };
 
+  const runCode = () => {
+    handleRun(banglaCode, (out, js) => { setOutput(out); setJsCode(js); }, setError);
+  };
+
   return (
     <div className="min-h-screen bg-white dark:bg-gradient-to-br from-gray-900 to-gray-800">
       <Header />
@@ -103,10 +107,7 @@ export default function PlaygroundPage() {
       <header className="border-b border-gray-700 bg-white dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="h-10 w-10 bg-black rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <span className="text-white text-lg font-bold">ব</span>
-              </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent dark:from-gray-100 dark:to-gray-300">
                   BanglaScript Playground
@@ -146,9 +147,9 @@ export default function PlaygroundPage() {
             transition={{ delay: 0.2 }}
           >
             <div className="mb-4 flex items-center gap-3">
-              <div className="h-8 w-8 bg-black rounded-lg flex items-center justify-center shadow-md shadow-[#F7DF1E]">
-                <span className="text-white text-sm font-bold">ব</span>
-              </div>
+               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <span className="font-mono text-lg font-bold text-primary-foreground">ব</span>
+            </div>
               <h2 className="text-lg font-bold text-gray-600 dark:text-gray-100">BanglaScript Code</h2>
             </div>
             <div className="h-[650px]">
@@ -168,6 +169,7 @@ export default function PlaygroundPage() {
               output={output}
               error={error}
               executionTime={executionTime}
+              runCode={runCode}
             />
           </motion.div>
         </div>

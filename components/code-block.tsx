@@ -29,7 +29,7 @@ export function CodeBlock({ code, language = "javascript", showLineNumbers = fal
           variant="ghost"
           size="sm"
           onClick={copyToClipboard}
-          className="h-7 px-2 opacity-0 transition-opacity group-hover:opacity-100"
+          className="h-7 px-2 opacity-0 transition-opacity group-hover:opacity-100 cursor-pointer"
         >
           {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
         </Button>

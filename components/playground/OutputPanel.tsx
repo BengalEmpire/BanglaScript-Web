@@ -11,6 +11,7 @@ interface OutputPanelProps {
   output: string;
   error: string;
   executionTime?: number | null;
+  runCode?: () => void;
 }
 
 export function OutputPanel({
@@ -20,6 +21,7 @@ export function OutputPanel({
   output,
   error,
   executionTime,
+  runCode,
 }: OutputPanelProps) {
   const [isMaximized, setIsMaximized] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -36,10 +38,8 @@ export function OutputPanel({
 
   return (
     <div className="h-full flex flex-col bg-[#1e1e1e] rounded-lg shadow-2xl border border-[#2d2d2d] overflow-hidden">
-      {/* Window Title Bar */}
       <div className="bg-[#2d2d2d] border-b border-[#1e1e1e] px-4 py-2 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* macOS-style window controls */}
           <div className="flex items-center gap-2">
             <button 
               type="button" 
@@ -75,6 +75,7 @@ export function OutputPanel({
             onClick={handleCopy}
             className="p-1.5 rounded hover:bg-[#3d3d3d] transition-colors text-gray-400 hover:text-gray-200"
             aria-label="Copy"
+            title="Copy main.js"
           >
             {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
           </button>
@@ -118,7 +119,7 @@ export function OutputPanel({
 
         <TabsContent value="console" className="flex-1 m-0 overflow-hidden bg-[#1e1e1e]">
           <div className="h-full overflow-auto">
-            <ConsoleOutput output={output} error={error} executionTime={executionTime} />
+            <ConsoleOutput output={output} error={error} executionTime={executionTime} runCode={runCode} />
           </div>
         </TabsContent>
       </Tabs>

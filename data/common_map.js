@@ -63,7 +63,7 @@ export const COMMON_MAP = {
   "পিএইচডি": "phd",
 
 
-  "গণিত": "math",
+  "গণিত": "Math",
   "নম্বর": "number",
   "নাম্বার":"number",
   "বিজ্ঞান": "science",
@@ -85,7 +85,7 @@ export const COMMON_MAP = {
   "অ্যারে": "array",
   "অবজেক্ট": "object",
   "ডাটা": "data",
-  "":"",
+  "এলোমেলো":"random",
   "খুলো":"keys",
   "প্রাপ্ত":"Received",
   "ইউনিট": "unit",
@@ -204,6 +204,7 @@ export const COMMON_MAP = {
   "সতর্কতা": "warning",
   "প্রক্রিয়াধীন": "processing",
   "সম্পন্ন": "complete",
+  "সর্বোচ্চ":"max",
 
 
   "চালাও": "run",
@@ -270,5 +271,27 @@ export const COMMON_MAP = {
   "প্রকল্প": "project",
   "ইভেন্ট": "event",
   "অ্যাকশন": "action",
-  "মোড": "mode"
+  "মোড": "mode",
+
+"প্রথম": "first",
+"দ্বিতীয়": "second",
+"তৃতীয়": "third",
+"চতুর্থ": "fourth",
+"পঞ্চম": "fifth",
+"ষষ্ঠ": "sixth",
+"সপ্তম": "seventh",
+"অষ্টম": "eighth",
+"নবম": "ninth",
+"দশম": "tenth",
+"বই": "book",
+"কলম": "pen",
+"চেয়ার": "chair",
+"টেবিল": "table",
+"দরজা": "door",
+"জানালা": "window",
+"সূর্য": "sun",
+"চাঁদ": "moon",
+"পানি": "water",
+"আগুন": "fire"
+
 };
