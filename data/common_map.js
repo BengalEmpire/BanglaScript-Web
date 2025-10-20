@@ -292,6 +292,13 @@ export const COMMON_MAP = {
 "সূর্য": "sun",
 "চাঁদ": "moon",
 "পানি": "water",
-"আগুন": "fire"
+"আগুন": "fire",
+"যানবাহন": "Vehicle",
+"বিমান": "Airplane",
+"গাড়ি": "Car",
+"বাইক": "Bike",
+"নৌকা": "Boat",
+"ট্রেন": "Train",
+"মডেল": "Model",
 
 };
