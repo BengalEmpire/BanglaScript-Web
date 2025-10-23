@@ -27,6 +27,7 @@ const keywordData = {
   'ক্লাস': 'class',
   'গঠন': 'constructor',
   'লিখো': 'console.log',
+  'প্রিন্ট': 'console.log',  
   'ছাপাও': 'console.log',
   'সমস্যা_লিখো': 'console.error',
   'সতর্কতা': 'console.warn',
@@ -55,7 +56,14 @@ const keywordData = {
   'এটি': 'this',
   'বিস্তৃত': 'extends',
   'স্ট্যাটিক': 'static',
-  'স্থির': 'static'
+  'স্থির': 'static',
+
+  'ইনপুট': 'prompt',       
+  'সতর্কতা_বক্স': 'alert', 
+  'গণিত': 'Math',           
+  'শব্দসমূহ': 'stringify',   
+  'প্রাপ্ত': 'data',          
+  'প্রতিক্রিয়া': 'response',  
 };
 
 

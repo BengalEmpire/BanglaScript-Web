@@ -89,7 +89,7 @@ export const KEYWORDS = {
   'শব্দসমূহ': 'stringify',    // “JSON.শব্দসমূহ” → “JSON.stringify”
   'প্রাপ্ত': 'data',           // “ধ্রুবক প্রাপ্ত = await response.json();” এর মতো ক্ষেত্রে ব্যবহারযোগ্য
   'প্রতিক্রিয়া': 'response',   // Fetch API response mapping
-
+  'সতর্কতা_বক্স': 'alert', 
 
 
   'খুঁজে': 'find',
