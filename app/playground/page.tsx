@@ -164,6 +164,7 @@ export default function PlaygroundPage() {
               <div>
                 <button
                   onClick={openModal}
+                  title="Keywords"
                   className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-green-600 cursor-pointer"
                 >
                
