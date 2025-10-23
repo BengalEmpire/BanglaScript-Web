@@ -1,84 +1,112 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import commonMap from '@/public/json/common-map.json';
-import keywords from '@/public/json/keywords.json';
 
-type CommonMap = { [key: string]: any };
-type Keywords = string[];
+// Sample data - replace with your actual keywords
+const keywordData = {
+  'যদি': 'if',
+  'অন্যথা': 'else',
+  'ফাংশন': 'function',
+  'রিটার্ন': 'return',
+  'চলক': 'var',
+  'ধ্রুবক': 'const',
+  'পরিবর্তনশীল': 'let',
+  'লুপ': 'for',
+  'যতক্ষণ': 'while',
+  'ভাঙ্গো': 'break',
+  'চালিয়ে যাও': 'continue',
+  'চেষ্টা করো': 'try',
+  'ধরো': 'catch',
+  'অবশেষে': 'finally',
+  'নতুন': 'new',
+  'এই': 'this',
+  'শ্রেণী': 'class',
+  'বিস্তৃত': 'extends',
+  'স্ট্যাটিক': 'static',
+  'অ্যাসিংক': 'async',
+  'অপেক্ষা': 'await',
+};
 
-const data: CommonMap = commonMap;
-const keywordList: Keywords = keywords;
-
-const syntaxTable: React.FC = () => {
-  // Stagger animation variants for lists
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
     },
-  };
+  },
+};
 
-  const itemVariants = {
-    hidden: { y: 50, opacity: 0 },
-    visible: { y: 0, opacity: 1 },
-  };
+const rowVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: {
+      duration: 0.4,
+      ease: 'easeOut'
+    }
+  },
+};
 
+const SyntaxTable = () => {
   return (
-    <div className="min-h-screen bg-white py-8">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-3 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
+      <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
-        <motion.h1
-          className="text-4xl font-bold text-center text-gray-800 mb-12"
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6 }}
+        <motion.div
+          className="text-center mb-8 sm:mb-12"
+          initial={{ scale: 0.9, opacity: 0, y: -20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
         >
-          বাংলা থেকে ইংরেজি ম্যাপিং এবং কীওয়ার্ডস
-        </motion.h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-800 mb-3 sm:mb-4">
+            প্রোগ্রামিং কীওয়ার্ডস
+          </h1>
+          <p className="text-sm sm:text-base md:text-lg text-gray-600">
+            বাংলা থেকে JavaScript কীওয়ার্ড রেফারেন্স
+          </p>
+        </motion.div>
 
-        {/* Keywords Section */}
-        <motion.section
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={containerVariants}
+        {/* Table Container with Shadow */}
+        <motion.div
+          className="w-full bg-white rounded-lg shadow-xl overflow-hidden"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <motion.h2
-            className="text-2xl font-semibold text-center text-green-700 mb-6"
-            variants={itemVariants}
-          >
-            প্রোগ্রামিং কীওয়ার্ডস (Keywords)
-          </motion.h2>
           <div className="overflow-x-auto">
             <motion.table
-              className="w-full bg-green-50 border border-green-200 rounded-lg overflow-hidden shadow-md"
+              className="w-full text-left"
               variants={containerVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-100px' }}
             >
-              <thead>
-                <tr className="bg-green-100">
-                  <th className="p-4 text-left font-semibold text-gray-800">বাংলা শব্দ</th>
-                  <th className="p-4 text-left font-semibold text-gray-800">JS কীওয়ার্ড</th>
+              <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white sticky top-0">
+                <tr>
+                  <th className="px-4 py-4 sm:px-6 sm:py-5 font-semibold text-sm sm:text-base md:text-lg w-1/2">
+                    বাংলা শব্দ
+                  </th>
+                  <th className="px-4 py-4 sm:px-6 sm:py-5 font-semibold text-sm sm:text-base md:text-lg w-1/2">
+                    JavaScript কীওয়ার্ড
+                  </th>
                 </tr>
               </thead>
-              <tbody>
-                {Object.entries(keywords).map(([bengaliKey, jsValue], index) => (
+              <tbody className="divide-y divide-gray-200">
+                {Object.entries(keywordData).map(([bengali, jsKeyword], index) => (
                   <motion.tr
-                    key={`${bengaliKey}-${index}`}
-                    className="border-t hover:bg-green-100 transition-colors duration-200"
-                    variants={itemVariants}
-                    whileHover={{ backgroundColor: '#f0fdf4' }}
-                    transition={{ type: 'spring', stiffness: 400 }}
+                    key={`${bengali}-${index}`}
+                    className="hover:bg-blue-50 transition-all duration-200 cursor-pointer"
+                    variants={rowVariants}
+                    whileHover={{ scale: 1.01, backgroundColor: '#eff6ff' }}
                   >
-                    <td className="p-4 text-lg font-medium text-gray-800 border-r border-green-200">
-                      {bengaliKey}
+                    <td className="px-4 py-3 sm:px-6 sm:py-4 font-medium text-gray-800 text-sm sm:text-base md:text-lg">
+                      {bengali}
                     </td>
-                    <td className="p-4">
-                      <code className="bg-gray-200 px-3 py-1 rounded-full text-sm font-mono text-green-800">
-                        {jsValue}
+                    <td className="px-4 py-3 sm:px-6 sm:py-4">
+                      <code className="inline-block bg-gradient-to-r from-blue-100 to-purple-100 px-3 py-1.5 sm:px-4 sm:py-2 rounded-md text-blue-700 font-mono text-xs sm:text-sm md:text-base font-semibold border border-blue-200">
+                        {jsKeyword}
                       </code>
                     </td>
                   </motion.tr>
@@ -86,66 +114,20 @@ const syntaxTable: React.FC = () => {
               </tbody>
             </motion.table>
           </div>
-        </motion.section>
+        </motion.div>
 
-        {/* Common Map Section */}
-        <motion.section
-          className="mb-12"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={containerVariants}
+        {/* Footer Note */}
+        <motion.div
+          className="text-center mt-8 text-xs sm:text-sm text-gray-500"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
         >
-          <motion.h2
-            className="text-2xl font-semibold text-center text-blue-700 mb-6"
-            variants={itemVariants}
-          >
-            আপাতত এগুলো variable এবং function নাম এর ক্ষেত্রে ব্যবহার করতে হবে। (বাংলায়)
-          </motion.h2>
-          <div className="overflow-x-auto">
-            <motion.table
-              className="w-full bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg"
-              variants={containerVariants}
-            >
-              <thead>
-                <tr className="bg-blue-100">
-                  <th className="p-4 text-left font-semibold text-gray-800">বাংলা শব্দ</th>
-                  <th className="p-4 text-left font-semibold text-gray-800">ইংরেজি সমতুল্য</th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(commonMap).map(([bengaliKey, englishValue], index) => (
-                  <motion.tr
-                    key={`${bengaliKey}-${index}`}
-                    className="border-t hover:bg-blue-50 transition-colors duration-200"
-                    variants={itemVariants}
-                    whileHover={{ backgroundColor: '#eff6ff' }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    <td className="p-4 text-lg font-medium text-gray-800 border-r border-gray-200">
-                      {bengaliKey}
-                    </td>
-                    <td className="p-4 text-sm text-gray-600 italic">{englishValue}</td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </motion.table>
-          </div>
-        </motion.section>
-
-
+          মোট {Object.keys(keywordData).length} টি কীওয়ার্ড
+        </motion.div>
       </div>
-      <motion.h2
-        className="text-2xl font-semibold text-center text-black mb-6 mt-6 underline decoration-pink-500"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={itemVariants}
-      >
-        আগামিতে আরো যোগ হবে।
-      </motion.h2>
     </div>
   );
 };
 
-export default syntaxTable;
+export default SyntaxTable;

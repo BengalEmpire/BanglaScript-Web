@@ -261,19 +261,19 @@ export default function ComputerProgramming() {
                      <motion.div variants={itemVariants}>
                         <h3 className="text-2xl font-semibold mb-2">ফাংশন (অনুষ্ঠান)</h3>
                         <p className="mb-4">ফাংশন হলো একটি নির্দিষ্ট কাজ করার জন্য কোডের একটি ব্লক, যা বারবার ব্যবহার করা যায়। যেমন একটি জুস মেকার, যা ফল নিয়ে জুস তৈরি করে দেয়।</p>
-                        <CodeBlock code={`অনুষ্ঠান যোগ(সংখ্যা ক, সংখ্যা খ) {\n  প্রেরণ ক + খ;\n}\n\nলিখো(যোগ(৫, ৩)); // আউটপুট: ৮`} />
+                        <CodeBlock code={`অনুষ্ঠান যোগ( ক, খ) {\n  প্রেরণ ক + খ;\n}\n\nলিখো(যোগ(৫, ৩)); // আউটপুট: ৮`} />
                     </motion.div>
 
                     <motion.div variants={itemVariants}>
                         <h3 className="text-2xl font-semibold mb-2">কন্ডিশন (শর্ত)</h3>
                         <p className="mb-4">যদি একটি শর্ত পূরণ হয়, তবে নির্দিষ্ট কাজ হবে, নাহলে অন্য কাজ হবে। যেমন: যদি বৃষ্টি হয়, ছাতা নেব।</p>
-                        <CodeBlock code={`সংখ্যা বয়স = ১৮;\n\nযদি (বয়স >= ১৮) {\n  লিখো("আপনি ভোট দিতে পারবেন");\n} না হলে {\n  লিখো("আপনি ভোট দিতে পারবেন না");\n}`} />
+                        <CodeBlock code={`সংখ্যা বয়স = ১৮;\n\nযদি (বয়স >= ১৮) {\n  লিখো("আপনি ভোট দিতে পারবেন");\n} নাহলে {\n  লিখো("আপনি ভোট দিতে পারবেন না");\n}`} />
                     </motion.div>
 
                     <motion.div variants={itemVariants}>
                         <h3 className="text-2xl font-semibold mb-2">লুপ (পুনরাবৃত্তি)</h3>
                         <p className="mb-4">একটি কাজ নির্দিষ্ট সংখ্যক বার বা একটি শর্ত পূরণ না হওয়া পর্যন্ত পুনরাবৃত্তি করা।</p>
-                        <CodeBlock code={`জন্য (সংখ্যা i = ১; i <= ৫; i = i + ১) {\n  লিখো("নমস্কার বাংলা", i);\n}\n// এই কোডটি ৫ বার "নমস্কার বাংলা" লিখবে।`} />
+                        <CodeBlock code={`জন্য (সংখ্যা i = ১; i <= ৫; i = i + ১) {\n  লিখো("আমাদের ভাষা বাংলা", i);\n}\n// এই কোডটি ৫ বার "আমাদের ভাষা বাংলা" লিখবে।`} />
                     </motion.div>
                 </div>
             </motion.section>

@@ -11,6 +11,7 @@ import { transpile, executeCode } from "@/lib/transpiler";
 import { OutputPanel } from "@/components/playground/OutputPanel";
 import { examples } from "@/lib/playground-example-bjs";
 import DownloadButton from '@/components/DownloadButton';
+import Modal from '@/components/Modal';
 
 export default function PlaygroundPage() {
   const [banglaCode, setBanglaCode] = useState<string>(examples[1].code);
@@ -21,6 +22,10 @@ export default function PlaygroundPage() {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>("javascript");
   const [executionTime, setExecutionTime] = useState<number | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const handleTranspile = (code: string, onSuccess: (js: string) => void, onError: (err: string) => void) => {
     setIsProcessing(true);
@@ -141,21 +146,40 @@ export default function PlaygroundPage() {
           executionTime={executionTime}
         />
         <div className="grid lg:grid-cols-2 gap-6">
-          <motion.div
+<motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="mb-4 flex items-center gap-3">
-               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <span className="font-mono text-lg font-bold text-primary-foreground">ব</span>
+            <div className="mb-4 flex items-center justify-between gap-3">
+              {/* Left section: Icon + Title */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                  <span className="font-mono text-lg font-bold text-primary-foreground">ব</span>
+                </div>
+                <h2 className="text-lg font-bold text-gray-600 dark:text-gray-100">BanglaScript Code</h2>
+              </div>
+
+              {/* Right section: Button */}
+              <div>
+                <button
+                  onClick={openModal}
+                  className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-green-600 cursor-pointer"
+                >
+               
+                </button>
+
+                {/* Modal component */}
+                <Modal isOpen={isModalOpen} onClose={closeModal} />
+              </div>
             </div>
-              <h2 className="text-lg font-bold text-gray-600 dark:text-gray-100">BanglaScript Code</h2>
-            </div>
+
+            {/* Code Editor */}
             <div className="h-[650px]">
               <BanglaCodeEditor value={banglaCode} onChange={updateBanglaCode} />
             </div>
           </motion.div>
+
 
           <motion.div
             initial={{ opacity: 0, x: 20 }}
