@@ -1,30 +1,65 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-// Sample data - replace with your actual keywords
 const keywordData = {
-  'যদি': 'if',
-  'অন্যথা': 'else',
-  'ফাংশন': 'function',
-  'রিটার্ন': 'return',
-  'চলক': 'var',
+  'সংখ্যা': 'let',
+  'শব্দ': 'let',
+  'বাক্য': 'let',
+  'চলক': 'let',
+  'পরিবর্তনশীল': 'var',
   'ধ্রুবক': 'const',
-  'পরিবর্তনশীল': 'let',
-  'লুপ': 'for',
-  'যতক্ষণ': 'while',
-  'ভাঙ্গো': 'break',
-  'চালিয়ে যাও': 'continue',
-  'চেষ্টা করো': 'try',
+  'অনুষ্ঠান': 'function',
+  'ফাংশন': 'function',
+  'প্রেরণ': 'return',
+  'ফেরত': 'return',
+  'যদি': 'if',
+  'নাহলে': 'else',
+  'অন্যথায়': 'else',
+  'নাহলে_যদি': 'else if',
+  'যখন': 'while',
+  'জন্য': 'for',
+  'প্রতিটি': 'for',
+  'করো': 'do',
+  'থামাও': 'break',
+  'চালিয়ে_যাও': 'continue',
+  'নতুন': 'new',
+  'শ্রেণী': 'class',
+  'ক্লাস': 'class',
+  'গঠন': 'constructor',
+  'লিখো': 'console.log',
+  'ছাপাও': 'console.log',
+  'সমস্যা_লিখো': 'console.error',
+  'সতর্কতা': 'console.warn',
+  'তথ্য': 'console.info',
+  'সত্য': 'true',
+  'মিথ্যা': 'false',
+  'শূন্য': 'null',
+  'শুন্য': 'null',
+  'অনির্ধারিত': 'undefined',
+  'চেষ্টা': 'try',
   'ধরো': 'catch',
   'অবশেষে': 'finally',
-  'নতুন': 'new',
-  'এই': 'this',
-  'শ্রেণী': 'class',
+  'ফেলা': 'throw',
+  'অপেক্ষা': 'await',
+  'অ্যাসিঙ্ক': 'async',
+  'সুইচ': 'switch',
+  'কেস': 'case',
+  'ডিফল্ট': 'default',
+  'আমদানি': 'import',
+  'রপ্তানি': 'export',
+  'থেকে': 'from',
+  'হিসেবে': 'as',
+  'মুছো': 'delete',
+  'ইন': 'in',
+  'অফ': 'of',
+  'এটি': 'this',
   'বিস্তৃত': 'extends',
   'স্ট্যাটিক': 'static',
-  'অ্যাসিংক': 'async',
-  'অপেক্ষা': 'await',
+  'স্থির': 'static'
 };
+
+
+
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -51,11 +86,11 @@ const rowVariants = {
 
 const SyntaxTable = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-3 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:bg-gray-400 py-8 px-3 sm:py-12 sm:px-6 lg:py-16 lg:px-8">
       <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
         <motion.div
-          className="text-center mb-8 sm:mb-12"
+          className="text-center mb-8 sm:mb-12 sticky"
           initial={{ scale: 0.9, opacity: 0, y: -20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
