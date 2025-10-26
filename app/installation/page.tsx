@@ -490,9 +490,10 @@ export default function BanglaScriptSetupPage() {
               transition={{ duration: 0.8 }}
             >
               <OpenInAI
-                pageUrl={typeof window !== "undefined" ? window.location.href : ""}
-                customPrompt="Explain what this web page is doing in detail:"
-              />
+                  pageUrl="https://bangla-script.vercel.app/installation"
+                  customPrompt="Explain this web page in detail and guide me through the installation process step by step:"
+                />
+
             </motion.div>
           </motion.div>
 
