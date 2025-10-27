@@ -19,7 +19,7 @@ const inter = Inter({
 })
 
 export const metadata = {
-  title: "BanglaScript - Write JavaScript in Bengali | বাংলা ভাষায় প্রোগ্রামিং",
+  title: "BanglaScript - Write JavaScript in Bengali | বাংলা ভাষায় প্রোগ্রামিং | BJS",
   description:
     "BanglaScript is a Bangla-to-JavaScript transpiler that enables developers to write programs in Bengali syntax. Write in Bangla, Run in JavaScript.",
   keywords:
