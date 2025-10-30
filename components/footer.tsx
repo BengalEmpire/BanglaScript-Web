@@ -57,19 +57,14 @@ export function Footer() {
                   Community
                 </Link>
               </li>
-              <li>
-                <a
-                  href="https://github.com/banglascript"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-primary transition-colors"
-                >
-                  GitHub
-                </a>
-              </li>
-              <li>
+               <li>
                 <Link href="/blog" className="text-muted-foreground hover:text-primary transition-colors">
                   Blog
+                </Link>
+              </li>
+              <li>
+               <Link href="/learn-banglascript" className="text-muted-foreground hover:text-primary transition-colors" title="npm package">
+                  Learn BanglaScript
                 </Link>
               </li>
             </ul>
