@@ -138,14 +138,14 @@ const setupSteps = [
       },
       {
         title: "৩. যাচাই করুন",
-        code: "banglascript --version",
+        code: "bjs --version",
         codeLabel: "ইনস্টল সফল হয়েছে কিনা দেখতে:",
         expectedOutput: "ভার্সন নম্বর দেখাবে (যেমন: 1.0.0)"
       },
       {
         title: "৪. প্রথম প্রোগ্রাম চালান",
         content: "একটি ফাইল তৈরি করুন (যেমন: test.bjs) এবং তাতে লিখুন: দেখাও(\"হ্যালো ওয়ার্ল্ড\");",
-        code: "banglascript test.bjs",
+        code: "npm run test.bjs",
         codeLabel: "চালাতে:",
         expectedOutput: "আউটপুট: হ্যালো ওয়ার্ল্ড"
       }
@@ -236,7 +236,7 @@ const setupSteps = [
     description: "বাংলাস্ক্রিপ্টের জন্য অফিসিয়াল VS Code এক্সটেনশন শীঘ্রই আসছে। এতে কোড লেখা আরও সহজ হবে।",
     whyNeeded: "কী পাবেন: Syntax Highlighting, Auto-complete, Error Detection, এবং Code Snippets।",
     links: [
-      { href: "https://marketplace.visualstudio.com/", text: "VS Code Marketplace চেক করুন", isPrimary: false },
+      { href: "https://github.com/BengalEmpire/banglascript-vscode", text: "VS Code Marketplace চেক করুন", isPrimary: false },
     ],
     detailedSteps: [
       {
