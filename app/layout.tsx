@@ -22,6 +22,9 @@ export const metadata = {
   title: "BanglaScript - Write JavaScript in Bengali | বাংলা ভাষায় প্রোগ্রামিং | BJS",
   description:
     "BanglaScript is a Bangla-to-JavaScript transpiler that enables developers to write programs in Bengali syntax. Write in Bangla, Run in JavaScript.",
+  icons: {
+    icon: "/bjs.jpg",
+  },
   keywords:
     "BanglaScript, Bengali Programming, Bangla Language Transpiler, Bengali Developers, JavaScript, Open Source, Developer Tools",
   authors: [{ name: "Mahmud Rahman" }],
@@ -49,11 +52,9 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
-      suppressHydrationWarning
+      suppressHydrationWarning // Good! Keep this, especially with ThemeProvider
     >
-      <head>
-         <link rel="icon" href="/bjs.jpg" />
-      </head>
+      {/* <head> tag is no longer needed here, Next.js manages it */}
       <body>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
           {children}
