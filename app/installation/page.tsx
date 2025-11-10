@@ -195,60 +195,23 @@ const setupSteps = [
   },
   {
     step: 5,
-    title: "বাংলা টাইপিং শিখুন",
-    icon: <Type className="h-8 w-8" />,
-    iconColor: "text-orange-500",
-    bgColor: "bg-orange-50 dark:bg-orange-900/20",
-    accentColor: "border-orange-200 dark:border-orange-800",
-    description: "দ্রুত কোড লিখতে হলে বাংলা টাইপিং জানা জরুরি। চিন্তা নেই, অনুশীলন করলে সহজ হয়ে যাবে!",
-    whyNeeded: "কেন প্রয়োজন: ধীরে টাইপ করলে প্রোগ্রামিং শিখতে সময় বেশি লাগবে।",
-    links: [
-      { href: "https://www.easybanglatyping.com/", text: "Easy Bangla Typing (ফ্রি টিউটোরিয়াল)", isPrimary: true },
-      { href: "https://www.typingpoint.com/bengali/bengali-typing", text: "Bengali Typing Master", isPrimary: false },
-    ],
-    detailedSteps: [
-      {
-        title: "১. কীবোর্ড লেআউট চিনুন",
-        content: "প্রথমে Avro Phonetic লেআউট ব্যবহার করুন। এতে বাংলা উচ্চারণ ইংরেজিতে লিখলেই বাংলা হয়ে যায়।",
-        tip: "উদাহরণ: 'ami' → আমি, 'tumi' → তুমি, 'bangla' → বাংলা"
-      },
-      {
-        title: "২. প্রতিদিন ১৫ মিনিট অনুশীলন করুন",
-        content: "প্রথম সপ্তাহ: ছোট ছোট শব্দ লিখুন (আমি, তুমি, সে, ভালো, খারাপ)।",
-        content2: "দ্বিতীয় সপ্তাহ: ছোট বাক্য লিখুন (আমি ভালো আছি, তুমি কেমন আছো?)।"
-      },
-      {
-        title: "৩. কোড লেখার অনুশীলন করুন",
-        content: "বাংলাস্ক্রিপ্টের সাধারণ শব্দগুলো বারবার লিখুন:",
-        code: "দেখাও, চলক, যদি, নাহলে, লুপ, ফাংশন",
-        codeLabel: "এগুলো বারবার টাইপ করুন:"
-      }
-    ],
-    practiceGoal: "লক্ষ্য: ১ মাসে মিনিটে ২০-৩০ শব্দ টাইপ করতে পারা।"
-  },
-  {
-    step: 6,
-    title: "VS Code Extension (শীঘ্রই আসছে)",
+    title: "VS Code Extension",
     icon: <Blocks className="h-8 w-8" />,
     iconColor: "text-indigo-500",
     bgColor: "bg-indigo-50 dark:bg-indigo-900/20",
     accentColor: "border-indigo-200 dark:border-indigo-800",
-    description: "বাংলাস্ক্রিপ্টের জন্য অফিসিয়াল VS Code এক্সটেনশন শীঘ্রই আসছে। এতে কোড লেখা আরও সহজ হবে।",
+    description: "বাংলাস্ক্রিপ্টের জন্য অফিসিয়াল VS Code এক্সটেনশন। এতে কোড লেখা আরও সহজ হবে।",
     whyNeeded: "কী পাবেন: Syntax Highlighting, Auto-complete, Error Detection, এবং Code Snippets।",
     links: [
-      { href: "https://github.com/BengalEmpire/banglascript-vscode", text: "VS Code Marketplace চেক করুন", isPrimary: false },
+      { href: "https://marketplace.visualstudio.com/items?itemName=BengalEmpire.banglascript", text: "VS Code Marketplace", isPrimary: true },
     ],
     detailedSteps: [
+   
       {
-        title: "১. এখন কী করবেন?",
-        content: "Extension আসার আগে পর্যন্ত .bjs ফাইলগুলো Plain Text mode এ লিখুন। কোনো সমস্যা নেই।"
-      },
-      {
-        title: "২. Extension আসলে কীভাবে ইনস্টল করবেন?",
-        content: "VS Code এ Extensions ট্যাবে (Ctrl+Shift+X) গিয়ে 'BanglaScript' সার্চ করে Install বাটনে ক্লিক করবেন।"
+        title: "১. Extension ইনস্টল করুন",
+        content: "VS Code এ Extensions ট্যাবে (Ctrl+Shift+X) গিয়ে 'BanglaScript' সার্চ করে Install বাটনে ক্লিক করুন।"
       }
-    ],
-    comingSoon: "আপডেট পেতে: GitHub বা অফিসিয়াল ওয়েবসাইট ফলো করুন।"
+    ],    comingSoon: "আরও ফিচার আসছে! অটোমেটিক কোড ফরম্যাটিং এবং ডিবাগিং শীঘ্রই যুক্ত করা হবে।"
   },
 ];
 
