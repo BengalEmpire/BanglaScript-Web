@@ -140,7 +140,7 @@ const setupSteps = [
         title: "৩. যাচাই করুন",
         code: "bjs --version",
         codeLabel: "ইনস্টল সফল হয়েছে কিনা দেখতে:",
-        expectedOutput: "ভার্সন নম্বর দেখাবে (যেমন: 1.0.0)"
+        expectedOutput: "ভার্সন নম্বর দেখাবে (যেমন: 3.0.0)"
       },
       {
         title: "৪. প্রথম প্রোগ্রাম চালান",
