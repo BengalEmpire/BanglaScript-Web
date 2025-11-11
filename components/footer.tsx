@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Github, Twitter, Youtube, Unplug } from "lucide-react"
+import { Github, Twitter, Blocks, Unplug } from "lucide-react"
 
 export function Footer() {
   return (
@@ -92,13 +92,13 @@ export function Footer() {
                 <span className="sr-only">NPM</span>
               </a>
               <a
-                href=""
+                href="https://marketplace.visualstudio.com/items?itemName=BengalEmpire.banglascript"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted text-muted-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
               >
-                <Youtube className="h-4 w-4" />
-                <span className="sr-only">YouTube</span>
+                <Blocks className="h-4 w-4" />
+                <span className="sr-only" title="VSCode Editor Extension for Banglascript">Extension</span>
               </a>
             </div>
           </div>
