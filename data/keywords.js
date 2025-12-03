@@ -234,7 +234,7 @@ export const KEYWORDS = {
   শিরোনাম: "document.title",
   এলিমেন্ট: "element",
   উপাদান: "element",
-  আইডি_দ্বারা_পাও: "getElementById", 
+  আইডি_দ্বারা_পাও: "getElementById",
   শ্রেণী_দ্বারা_পাও: "getElementsByClassName",
   ট্যাগ_দ্বারা_পাও: "getElementsByTagName",
   সিলেক্টর_দ্বারা_পাও: "querySelector",
