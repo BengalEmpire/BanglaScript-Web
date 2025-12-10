@@ -1446,7 +1446,7 @@
               {
                 "heading": "মৌলিক কমান্ডসমূহ",
                 "content": "বাংলাস্ক্রিপ্ট CLI দিয়ে নিচের কাজগুলো করা যায়:",
-                "code": "# একক ফাইল কম্পাইল\nbjs build file.bjs\n\n# ফাইল পরিবর্তন পর্যবেক্ষণসহ কম্পাইল\nbjs watch file.bjs\n\n# কম্পাইল করে সরাসরি চালান\nbjs run file.bjs\n\n# নতুন প্রজেক্ট তৈরি\nbjs init my-project\n\n# নতুন web প্রজেক্ট তৈরি\nbjs init --web my-project\n\n# কীওয়ার্ড তালিকা দেখুন\nbjs keywords\n\n# ভার্সন দেখুন\nbjs --version\n\n# সহায়তা দেখুন\nbjs --help",
+                "code": "# একক ফাইল কম্পাইল\n\nbjs build file.bjs\n\n# ফাইল পরিবর্তন পর্যবেক্ষণসহ কম্পাইল\n\nbjs watch file.bjs\n\n# কম্পাইল করে সরাসরি চালান\n\nbjs run file.bjs\n\n# নতুন প্রজেক্ট তৈরি\n\nbjs init my-project\n\n# নতুন web প্রজেক্ট তৈরি\n\nbjs init --web my-project\n\n# REST API server\n\nbjs init --api my-api\n\n# Full-stack application\n\nbjs init --fullstack my-app\n\n# CLI tool\n\nbjs init --cli my-tool\n\n# সব টেমপ্লেটের তালিকা\n\nbjs init --list\n\n# কীওয়ার্ড তালিকা দেখুন\n\nbjs keywords\n\n# ভার্সন দেখুন\n\nbjs --version\n\n# সহায়তা দেখুন\n\nbjs --help",
                 "language": "bash"
               },
               {

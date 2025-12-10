@@ -32,7 +32,7 @@ export default function Modal({ isOpen, onClose, image }) {
 
                     <img src={image} alt="bjs init --web [project Name]" className="w-full h-full object-cover rounded-xl" />
                 </motion.div>
-                <CurvedLoop marqueeText="BanglaScript ✦ 3.5.0 ✦ With ✦ New ✦ Feature ✦" />
+                <CurvedLoop marqueeText="BanglaScript ✦ 4.0.0 ✦ With ✦ New ✦ Feature ✦" />
             </motion.div>
         </AnimatePresence>
     );
