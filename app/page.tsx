@@ -68,7 +68,7 @@ console.log("যোগফল: " + Results)`
       <NewFeature
         isOpen={open}
         onClose={() => setOpen(false)}
-        image="https://camo.githubusercontent.com/bcc56ee48d63a1b574749a7bf3eca807b2199065cbaebafe79357715e4cc6f70/68747470733a2f2f7265732e636c6f7564696e6172792e636f6d2f64716f766a6d6d6c782f696d6167652f75706c6f61642f76313736333831333036362f7765625f776d6d7538772e676966"
+        image="https://i.postimg.cc/T3GgGWpp/banglascript-hoodie-community-edition-free.png"
       />
       <main className="flex-grow">
         <div className="mx-auto w-full max-w-7xl">
