@@ -9,6 +9,7 @@ import { ArrowRight, Code2, Globe, GraduationCap, Sparkles, Github, BookOpen } f
 import Link from "next/link"
 import { CodeBlock } from "@/components/code-block"
 import Image from 'next/image'
+import { LearnBanglaScriptCTA } from "@/components/LearnBanglaScriptCTA"
 
 export default function HomePage() {
 
@@ -281,6 +282,9 @@ console.log("যোগফল: " + Results)`
               </div>
             </div>
           </section>
+
+          {/* Learn BanglaScript CTA */}
+          <LearnBanglaScriptCTA />
 
           {/* CTA Section */}
           <section className="border-t border-border py-16 md:py-24">

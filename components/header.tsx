@@ -16,6 +16,7 @@ export function Header() {
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Docs", href: "/docs" },
+    { name: "Learn", href: "/learn-banglascript" },
     { name: "Playground", href: "/playground" },
     { name: "Community", href: "/community" },
   ]

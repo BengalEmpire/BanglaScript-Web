@@ -10,7 +10,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export default function Modal({ isOpen, onClose, image }) {
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  image: string;
+}
+
+export default function Modal({ isOpen, onClose, image }: ModalProps) {
   if (!isOpen) return null;
 
   return (
