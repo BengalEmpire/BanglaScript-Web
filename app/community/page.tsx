@@ -7,7 +7,7 @@ import { Footer } from "@/components/footer"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Github, MessageCircle, Youtube, Twitter, Users, Heart, Star, GitFork, ExternalLink } from 'lucide-react'
+import { Github, MessageCircle, Users, Heart, Star, GitFork, ExternalLink } from 'lucide-react'
 
 interface RepoData {
   stargazers_count: number
@@ -42,27 +42,33 @@ const Community = () => {
     forks_count: 180
   })
 
-  useEffect(() => {
-    fetch('https://api.github.com/repos/BengalEmpire/BanglaScript')
-      .then(res => res.json())
-      .then((data: RepoData) => {
-        setRepoData({
-          stargazers_count: data.stargazers_count,
-          forks_count: data.forks_count
+    useEffect(() => {
+      fetch('https://api.github.com/repos/BengalEmpire/BanglaScript')
+        .then(res => res.json())
+        .then((data) => {
+          if (
+            typeof data.stargazers_count === "number" &&
+            typeof data.forks_count === "number"
+          ) {
+            setRepoData({
+              stargazers_count: data.stargazers_count,
+              forks_count: data.forks_count
+            })
+          }
         })
-      })
-      .catch(() => {
-        // Fallback to defaults if fetch fails
-      })
-  }, [])
+        .catch(() => {
+          // keep defaults
+        })
+    }, [])
 
-  const formatStars = (count: number): string => {
-    if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}k`
+
+    const formatStars = (count?: number): string => {
+      if (!count) return "0"
+      if (count >= 1000) {
+        return `${(count / 1000).toFixed(1)}k`
+      }
+      return count.toString()
     }
-    return count.toString()
-  }
-
   const communityLinks: CommunityLink[] = [
     {
       name: "GitHub Repository",
@@ -116,7 +122,7 @@ const Community = () => {
     {
       name: "Mahmud Rahman",
       role: "Lead Developer",
-      avatar: "https://2.gravatar.com/avatar/882cec9129f3f848ebbdff9d8772f3fcf28b1d32a7963a43fda536f3f6985f7a?size=256&d=initials",
+      avatar: "https://avatars.githubusercontent.com/u/114731414?v=4",
       github: "mahmud-r-farhan"
     }
   ]
@@ -177,7 +183,9 @@ const Community = () => {
                         <div className="flex-1">
                           <h3 className="font-semibold mb-2">{link.name}</h3>
                           <p className="text-muted-foreground text-sm mb-3">{link.description}</p>
-                          <p className="text-xs text-muted-foreground mb-4">{formatStars(repoData.stargazers_count)} stars • {repoData.forks_count} forks</p>
+                          <p className="text-xs text-muted-foreground mb-4">
+                          {formatStars(repoData.stargazers_count ?? 0)} stars • {repoData.forks_count ?? 0} forks
+                        </p>
                           <Button asChild size="sm">
                             <a href={link.url} target="_blank" rel="noopener noreferrer">
                               Join Now
