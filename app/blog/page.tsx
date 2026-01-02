@@ -2,14 +2,13 @@
 
 import { motion } from 'framer-motion';
 import { Header } from "@/components/header"
-import SyntaxTable from "@/components/syntaxTable"
 import { Footer } from "@/components/footer"
 
 
 const BlogPage = () => {
   return (
     <div className=" text-gray-800">
-        <Header/>
+      <Header />
       {/* Header Section */}
       <header className="mb-12 text-center justify-center mt-50 h-[30vh]">
         <motion.h1
@@ -30,7 +29,6 @@ const BlogPage = () => {
         </motion.p>
       </header>
 
-      <SyntaxTable />
 
       {/* Footer Section */}
       <footer className="mb-5 text-center text-gray-600">
@@ -43,7 +41,7 @@ const BlogPage = () => {
           © {new Date().getFullYear()} BanglaScript Blog - All Rights Reserved.
         </motion.p>
       </footer>
-      <Footer/>
+      <Footer />
     </div>
   );
 };

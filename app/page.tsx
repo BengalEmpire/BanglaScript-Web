@@ -66,11 +66,7 @@ console.log("যোগফল: " + Results)`
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <NewFeature
-        isOpen={open}
-        onClose={() => setOpen(false)}
-        image="https://i.postimg.cc/T3GgGWpp/banglascript-hoodie-community-edition-free.png"
-      />
+
       <main className="flex-grow">
         <div className="mx-auto w-full max-w-7xl">
           {/* Hero Section */}
